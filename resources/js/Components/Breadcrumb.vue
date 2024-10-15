@@ -18,7 +18,7 @@ const breadcrumbItems = computed(() => [
 
 <template>
     <nav class="flex" aria-label="Breadcrumb">
-        <ol class="flex space-x-4 rounded-md px-6">
+        <ol class="flex rounded-md px-6">
             <li
                 v-for="(item, index) in breadcrumbItems"
                 :key="item.name"
@@ -31,7 +31,7 @@ const breadcrumbItems = computed(() => [
                             index === breadcrumbItems.length - 1
                                 ? 'text-gray-500'
                                 : 'text-gray-400 hover:text-gray-500',
-                            index === 0 ? '' : 'ml-4',
+                            index === 0 ? '' : 'ml-1',
                         ]"
                         :aria-current="
                             index === breadcrumbItems.length - 1

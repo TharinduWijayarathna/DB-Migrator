@@ -21,7 +21,7 @@ const toggleSidebar = () => {
             <!-- Top Navbar -->
             <header class="bg-white shadow-sm">
                 <div class="mx-auto flex items-center justify-between py-6">
-                    <div class="flex items-center">
+                    <div class="">
                         <slot name="breadcrumb"></slot>
                     </div>
                     <Dropdown align="right" width="48" class="px-5">
