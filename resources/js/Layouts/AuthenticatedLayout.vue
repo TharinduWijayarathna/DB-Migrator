@@ -20,11 +20,11 @@ const toggleSidebar = () => {
         <div class="flex flex-1 flex-col overflow-hidden">
             <!-- Top Navbar -->
             <header class="bg-white shadow-sm">
-                <div
-                    class="mx-auto flex items-center justify-between px-6 py-6 sm:px-6 lg:px-8"
-                >
-                    <h2 class="leading-tight"></h2>
-                    <Dropdown align="right" width="48">
+                <div class="mx-auto flex items-center justify-between py-6">
+                    <div class="flex items-center">
+                        <slot name="breadcrumb"></slot>
+                    </div>
+                    <Dropdown align="right" width="48" class="px-5">
                         <template #trigger>
                             <button
                                 class="flex items-center text-sm font-medium text-gray-500 transition duration-150 ease-in-out hover:text-gray-700 focus:outline-none"
@@ -64,7 +64,7 @@ const toggleSidebar = () => {
 
             <!-- Page Content -->
             <main class="flex-1 overflow-y-auto overflow-x-hidden bg-gray-100">
-                <div class="container-fluid mx-auto px-6 py-8">
+                <div class="container-fluid mx-auto">
                     <slot />
                 </div>
             </main>

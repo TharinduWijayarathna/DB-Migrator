@@ -26,7 +26,7 @@ const toggleSidebar = () => {
             sidebarWidth,
         ]"
     >
-        <div class="flex items-center justify-between p-4">
+        <div class="flex items-center justify-between p-5">
             <Link :href="route('dashboard')" v-show="!collapsed">
                 <ApplicationLogo
                     class="block h-9 w-auto fill-current text-black"
@@ -56,7 +56,7 @@ const toggleSidebar = () => {
             <NavLink
                 :href="route('dashboard')"
                 :active="route().current('dashboard')"
-                class="flex w-full items-center px-5 py-3 pt-3 transition-colors duration-200"
+                class="flex w-full items-center px-6 py-3 pt-3 transition-colors duration-200"
                 :class="[
                     route().current('dashboard')
                         ? 'bg-gray-200'
@@ -79,7 +79,40 @@ const toggleSidebar = () => {
                 </svg>
                 <span class="mx-4 pt-1" v-show="!collapsed">Dashboard</span>
             </NavLink>
-            <!-- Add more NavLink components here for other sidebar items -->
+            <NavLink
+                :href="route('connection.index')"
+                :active="route().current('connection.index')"
+                class="flex w-full items-center px-6 py-3 pt-3 transition-colors duration-200"
+                :class="[
+                    route().current('connection.index')
+                        ? 'bg-gray-200'
+                        : 'hover:bg-gray-300',
+                ]"
+            >
+                <!-- New Database SVG Icon -->
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    class="h-5 w-5"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M12 3c4.418 0 8 1.343 8 3s-3.582 3-8 3-8-1.343-8-3 3.582-3 8-3z"
+                    />
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M4 8.25c0 1.657 3.582 3 8 3s8-1.343 8-3M4 13.5c0 1.657 3.582 3 8 3s8-1.343 8-3M4 18.75c0 1.657 3.582 3 8 3s8-1.343 8-3"
+                    />
+                </svg>
+                <span class="mx-4 pt-1" v-show="!collapsed">
+                    Connect Database
+                </span>
+            </NavLink>
         </nav>
     </aside>
 </template>
