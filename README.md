@@ -31,54 +31,54 @@ Make sure you have the following installed:
 
 ### Step 1: Clone the repository
 
-\`\`\`bash
+```bash
 git clone https://github.com/TharinduWijayarathna/DB-Migrator.git
 cd your-repo-name
-\`\`\`
+```
 
 ### Step 2: Install PHP dependencies
 
-\`\`\`bash
+```bash
 composer install
-\`\`\`
+```
 
 ### Step 3: Install Node.js dependencies
 
-\`\`\`bash
+```bash
 npm install
 npm run dev
-\`\`\`
+```
 
 ### Step 4: Configure environment variables
 
 Copy the `.env.example` file to `.env` and update the necessary database credentials and other environment settings.
 
-\`\`\`bash
+```bash
 cp .env.example .env
-\`\`\`
+```
 
 Set up your database in the `.env` file:
 
-\`\`\`bash
+```bash
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
 DB_DATABASE=your_database_name
 DB_USERNAME=your_username
 DB_PASSWORD=your_password
-\`\`\`
+```
 
 ### Step 5: Generate the application key
 
-\`\`\`bash
+```bash
 php artisan key:generate
-\`\`\`
+```
 
 ### Step 6: Run database migrations
 
-\`\`\`bash
+```bash
 php artisan migrate
-\`\`\`
+```
 
 ## Usage
 
@@ -112,9 +112,9 @@ The system validates the uploaded files based on format and content. If the file
 
 To run tests, use the following command:
 
-\`\`\`bash
+```bash
 php artisan test
-\`\`\`
+```
 
 ## License
 
