@@ -6,7 +6,11 @@ use App\Http\Requests\StoreDBConnectionRequest;
 use App\Http\Requests\UpdateDBConnectionRequest;
 use App\Http\Resources\DBConnection\FilterDBConnectionsResource;
 use App\Models\DBConnection;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
 
 class DBConnectionController extends Controller
 {
@@ -77,14 +81,67 @@ class DBConnectionController extends Controller
 
     public function activate(DBConnection $dBConnection)
     {
-        DBConnection::where('id', '!=', $dBConnection->id)->update(['is_active' => false]);
-        $dBConnection->update(['is_active' => true]);
-        return $dBConnection;
+        try {
+            // Validate the DBConnection object
+            $validator = Validator::make($dBConnection->toArray(), [
+                'host' => 'required|string',
+                'port' => 'required|integer|between:1,65535',
+                'database' => 'required|string',
+                'username' => 'required|string',
+                'password' => 'required|string',
+            ]);
+
+            if ($validator->fails()) {
+                throw new ValidationException($validator);
+            }
+
+            Config::set('database.connections.mysql', [
+                'driver' => 'mysql',
+                'host' => $dBConnection->host,
+                'port' => $dBConnection->port,
+                'database' => $dBConnection->database,
+                'username' => $dBConnection->username,
+                'password' => $dBConnection->password,
+                'charset' => 'utf8mb4',
+                'collation' => 'utf8mb4_unicode_ci',
+                'prefix' => '',
+                'strict' => true,
+                'engine' => null,
+                'options' => [
+                    \PDO::ATTR_TIMEOUT => 5,
+                ],
+            ]);
+
+            try {
+                DB::purge('mysql');
+                $connection = DB::connection('mysql')->getPdo();
+                $connection->query('SELECT 1');
+            } catch (\PDOException $e) {
+                throw new \Exception('Database connection failed: ' . $e->getMessage());
+            }
+
+            DBConnection::where('id', '!=', $dBConnection->id)->update(['is_active' => false]);
+            $dBConnection->update(['is_active' => true]);
+            return $dBConnection;
+        } catch (ValidationException $e) {
+            return response()->json(['message' => 'Validation failed', 'errors' => $e->errors()], 422);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'An error occurred: ' . $e->getMessage()], 500);
+        }
     }
+
 
     public function deactivate(DBConnection $dBConnection)
     {
-        $dBConnection->update(['is_active' => false]);
-        return $dBConnection;
+        try {
+            if (!$dBConnection->is_active) {
+                return response()->json(['message' => 'Connection is already inactive'], 400);
+            }
+
+            $dBConnection->update(['is_active' => false]);
+            return $dBConnection;
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'An error occurred while deactivating the connection: ' . $e->getMessage()], 500);
+        }
     }
 }

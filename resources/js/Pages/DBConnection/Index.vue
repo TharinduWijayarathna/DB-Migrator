@@ -29,6 +29,8 @@ const form = useForm({
 
 const connections = ref([]);
 
+const isDisabled = ref(false);
+
 const openModal = () => {
     isModalOpen.value = true;
 };
@@ -58,11 +60,14 @@ const submit = async () => {
 };
 
 const activate = async (connection) => {
+    freezeActions();
     try {
         await axios.patch(route('connection.activate', connection.id));
-        getConnections();
+        await getConnections();
+        unfreezeActions();
     } catch (error) {
         console.error(error);
+        unfreezeActions();
     }
 };
 
@@ -73,6 +78,14 @@ const deactivate = async (connection) => {
     } catch (error) {
         console.error(error);
     }
+};
+
+const freezeActions = () => {
+    isDisabled.value = true; // Disable the buttons
+};
+
+const unfreezeActions = () => {
+    isDisabled.value = false; // Enable the buttons
 };
 
 onMounted(() => {
@@ -166,9 +179,12 @@ onMounted(() => {
                                 class="whitespace-no-wrap px-2 py-4 text-right text-sm font-medium leading-5"
                             >
                                 <ActiveButton
+                                    id="activate"
+                                    :disabled="isDisabled"
                                     @click="activate(connection)"
                                     v-if="connection.is_active == 0"
                                 >
+                                    <!-- Activate icon -->
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
                                         fill="none"
@@ -184,10 +200,14 @@ onMounted(() => {
                                         />
                                     </svg>
                                 </ActiveButton>
+
                                 <InactiveButton
+                                    id="inactivate"
+                                    :disabled="isDisabled"
                                     @click="deactivate(connection)"
                                     v-if="connection.is_active == 1"
                                 >
+                                    <!-- Deactivate icon -->
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
                                         fill="none"
