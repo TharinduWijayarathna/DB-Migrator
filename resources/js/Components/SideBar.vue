@@ -1,0 +1,85 @@
+<script setup lang="ts">
+import ApplicationLogo from '@/Components/ApplicationLogo.vue';
+import NavLink from '@/Components/NavLink.vue';
+import { Link } from '@inertiajs/vue3';
+import { computed } from 'vue';
+
+const props = defineProps<{
+    collapsed: boolean;
+}>();
+
+const emit = defineEmits<{
+    (e: 'toggle'): void;
+}>();
+
+const sidebarWidth = computed(() => (props.collapsed ? 'w-16' : 'w-64'));
+
+const toggleSidebar = () => {
+    emit('toggle');
+};
+</script>
+
+<template>
+    <aside
+        :class="[
+            'bg-white text-black transition-all duration-300 ease-in-out',
+            sidebarWidth,
+        ]"
+    >
+        <div class="flex items-center justify-between p-4">
+            <Link :href="route('dashboard')" v-show="!collapsed">
+                <ApplicationLogo
+                    class="block h-9 w-auto fill-current text-black"
+                />
+            </Link>
+            <button
+                @click="toggleSidebar"
+                class="rounded p-1 hover:bg-black hover:text-white focus:outline-none"
+            >
+                <svg
+                    class="h-6 w-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M4 6h16M4 12h16M4 18h16"
+                    ></path>
+                </svg>
+            </button>
+        </div>
+        <nav>
+            <NavLink
+                :href="route('dashboard')"
+                :active="route().current('dashboard')"
+                class="flex w-full items-center px-5 py-3 pt-3 transition-colors duration-200"
+                :class="[
+                    route().current('dashboard')
+                        ? 'bg-gray-200'
+                        : 'hover:bg-gray-300',
+                ]"
+            >
+                <svg
+                    class="h-5 w-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                    ></path>
+                </svg>
+                <span class="mx-4 pt-1" v-show="!collapsed">Dashboard</span>
+            </NavLink>
+            <!-- Add more NavLink components here for other sidebar items -->
+        </nav>
+    </aside>
+</template>
