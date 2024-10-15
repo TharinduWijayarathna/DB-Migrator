@@ -1,14 +1,84 @@
 <script setup lang="ts">
+import ActiveButton from '@/Components/ActiveButton.vue';
 import Breadcrumb from '@/Components/Breadcrumb.vue';
+import InactiveButton from '@/Components/InactiveButton.vue';
+import InputError from '@/Components/InputError.vue';
+import InputLabel from '@/Components/InputLabel.vue';
+import Modal from '@/Components/Modal.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import SecondaryButton from '@/Components/SecondaryButton.vue';
+import TextInput from '@/Components/TextInput.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head } from '@inertiajs/vue3';
+import { Head, useForm } from '@inertiajs/vue3';
+import axios from 'axios';
+import { onMounted, ref } from 'vue';
 
 const breadcrumbItems = [
     { name: 'Connect Database', href: route('connection.index') },
 ];
-</script>
 
+const isModalOpen = ref(false);
+
+const form = useForm({
+    username: '',
+    host: '',
+    port: '',
+    database: '',
+    password: '',
+});
+
+const connections = ref([]);
+
+const openModal = () => {
+    isModalOpen.value = true;
+};
+
+const closeModal = () => {
+    isModalOpen.value = false;
+    form.reset();
+};
+
+const getConnections = async () => {
+    try {
+        const response = await axios.get(route('connection.all'));
+        connections.value = response.data.data;
+    } catch (error) {
+        console.error(error);
+    }
+};
+
+const submit = async () => {
+    try {
+        await axios.post(route('connection.store'), form.data());
+        closeModal();
+        getConnections();
+    } catch (error) {
+        form.setErrors(error.response.data.errors);
+    }
+};
+
+const activate = async (connection) => {
+    try {
+        await axios.patch(route('connection.activate', connection.id));
+        getConnections();
+    } catch (error) {
+        console.error(error);
+    }
+};
+
+const deactivate = async (connection) => {
+    try {
+        await axios.patch(route('connection.deactivate', connection.id));
+        getConnections();
+    } catch (error) {
+        console.error(error);
+    }
+};
+
+onMounted(() => {
+    getConnections();
+});
+</script>
 <template>
     <Head title="Dashboard" />
 
@@ -24,9 +94,7 @@ const breadcrumbItems = [
         </template>
 
         <div class="py-5 text-end sm:px-6 lg:px-8">
-            <PrimaryButton :href="route('connection.create')"
-                >Add Connection</PrimaryButton
-            >
+            <PrimaryButton @click="openModal"> Add Connection </PrimaryButton>
         </div>
 
         <div class="mx-auto sm:px-6 lg:px-8">
@@ -39,7 +107,7 @@ const breadcrumbItems = [
                             <th
                                 class="bg-gray-50 px-2 py-3 text-left text-xs font-medium uppercase leading-4 tracking-wider text-gray-500"
                             >
-                                Name
+                                Username
                             </th>
                             <th
                                 class="bg-gray-50 px-2 py-3 text-left text-xs font-medium uppercase leading-4 tracking-wider text-gray-500"
@@ -56,39 +124,85 @@ const breadcrumbItems = [
                             >
                                 Database
                             </th>
+                            <th
+                                class="bg-gray-50 px-2 py-3 text-left text-xs font-medium uppercase leading-4 tracking-wider text-gray-500"
+                            >
+                                Password
+                            </th>
                             <th class="bg-gray-50 px-6 py-3"></th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-200 bg-white">
-                        <tr>
+                        <tr
+                            v-for="connection in connections"
+                            :key="connection.id"
+                        >
                             <td class="whitespace-no-wrap px-2 py-4">
                                 <div class="text-sm leading-5 text-gray-900">
-                                    Localhost
+                                    {{ connection.username }}
                                 </div>
                             </td>
                             <td class="whitespace-no-wrap px-2 py-4">
                                 <div class="text-sm leading-5 text-gray-900">
-                                    localhost
+                                    {{ connection.host }}
                                 </div>
                             </td>
                             <td class="whitespace-no-wrap px-2 py-4">
                                 <div class="text-sm leading-5 text-gray-900">
-                                    3306
+                                    {{ connection.port }}
                                 </div>
                             </td>
                             <td class="whitespace-no-wrap px-2 py-4">
                                 <div class="text-sm leading-5 text-gray-900">
-                                    test_db
+                                    {{ connection.database }}
+                                </div>
+                            </td>
+                            <td class="whitespace-no-wrap px-2 py-4">
+                                <div class="text-sm leading-5 text-gray-900">
+                                    {{ connection.password }}
                                 </div>
                             </td>
                             <td
                                 class="whitespace-no-wrap px-2 py-4 text-right text-sm font-medium leading-5"
                             >
-                                <a
-                                    href="#"
-                                    class="text-indigo-600 hover:text-indigo-900"
-                                    >Edit</a
+                                <ActiveButton
+                                    @click="activate(connection)"
+                                    v-if="connection.is_active == 0"
                                 >
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke-width="1.5"
+                                        stroke="currentColor"
+                                        class="size-6"
+                                    >
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+                                        />
+                                    </svg>
+                                </ActiveButton>
+                                <InactiveButton
+                                    @click="deactivate(connection)"
+                                    v-if="connection.is_active == 1"
+                                >
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke-width="1.5"
+                                        stroke="currentColor"
+                                        class="size-6"
+                                    >
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+                                        />
+                                    </svg>
+                                </InactiveButton>
                             </td>
                         </tr>
                     </tbody>
@@ -213,5 +327,107 @@ const breadcrumbItems = [
                 </div>
             </div>
         </div>
+
+        <Modal :show="isModalOpen" @close="closeModal">
+            <form @submit.prevent="submit">
+                <div class="p-6">
+                    <h2 class="text-lg font-medium text-gray-900">
+                        Create New Connection
+                    </h2>
+
+                    <div class="mt-6 space-y-6">
+                        <div>
+                            <InputLabel for="username" value="Username" />
+                            <TextInput
+                                id="username"
+                                v-model="form.username"
+                                type="text"
+                                class="mt-1 block w-full"
+                                required
+                                autofocus
+                            />
+                            <InputError
+                                :message="form.errors.username"
+                                class="mt-2"
+                            />
+                        </div>
+
+                        <div>
+                            <InputLabel for="host" value="Host" />
+                            <TextInput
+                                id="host"
+                                v-model="form.host"
+                                type="text"
+                                class="mt-1 block w-full"
+                                required
+                            />
+                            <InputError
+                                :message="form.errors.host"
+                                class="mt-2"
+                            />
+                        </div>
+
+                        <div>
+                            <InputLabel for="port" value="Port" />
+                            <TextInput
+                                id="port"
+                                v-model="form.port"
+                                type="text"
+                                class="mt-1 block w-full"
+                                required
+                            />
+                            <InputError
+                                :message="form.errors.port"
+                                class="mt-2"
+                            />
+                        </div>
+
+                        <div>
+                            <InputLabel for="database" value="Database" />
+                            <TextInput
+                                id="database"
+                                v-model="form.database"
+                                type="text"
+                                class="mt-1 block w-full"
+                                required
+                            />
+                            <InputError
+                                :message="form.errors.database"
+                                class="mt-2"
+                            />
+                        </div>
+
+                        <div>
+                            <InputLabel for="password" value="Password" />
+                            <TextInput
+                                id="password"
+                                v-model="form.password"
+                                type="password"
+                                class="mt-1 block w-full"
+                                required
+                            />
+                            <InputError
+                                :message="form.errors.password"
+                                class="mt-2"
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                <div
+                    class="flex items-center justify-end bg-gray-50 p-6 text-right"
+                >
+                    <SecondaryButton @click="closeModal" class="mr-2"
+                        >Cancel</SecondaryButton
+                    >
+                    <PrimaryButton
+                        :class="{ 'opacity-25': form.processing }"
+                        :disabled="form.processing"
+                    >
+                        Create Connection
+                    </PrimaryButton>
+                </div>
+            </form>
+        </Modal>
     </AuthenticatedLayout>
 </template>

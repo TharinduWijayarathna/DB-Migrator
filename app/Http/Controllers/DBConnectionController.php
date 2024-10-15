@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreDBConnectionRequest;
 use App\Http\Requests\UpdateDBConnectionRequest;
+use App\Http\Resources\DBConnection\FilterDBConnectionsResource;
 use App\Models\DBConnection;
 use Inertia\Inertia;
 
@@ -30,7 +31,16 @@ class DBConnectionController extends Controller
      */
     public function store(StoreDBConnectionRequest $request)
     {
-        //
+        return DBConnection::create($request->all());
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function all()
+    {
+        $query = DBConnection::query();
+        return FilterDBConnectionsResource::collection($query->paginate());
     }
 
     /**
@@ -63,5 +73,18 @@ class DBConnectionController extends Controller
     public function destroy(DBConnection $dBConnection)
     {
         //
+    }
+
+    public function activate(DBConnection $dBConnection)
+    {
+        DBConnection::where('id', '!=', $dBConnection->id)->update(['is_active' => false]);
+        $dBConnection->update(['is_active' => true]);
+        return $dBConnection;
+    }
+
+    public function deactivate(DBConnection $dBConnection)
+    {
+        $dBConnection->update(['is_active' => false]);
+        return $dBConnection;
     }
 }

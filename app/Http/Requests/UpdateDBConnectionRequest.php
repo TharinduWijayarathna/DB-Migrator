@@ -11,7 +11,7 @@ class UpdateDBConnectionRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,11 @@ class UpdateDBConnectionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'username' => 'required|string',
+            'password' => 'required|string',
+            'host' => 'required|string',
+            'port' => 'required|string',
+            'database' => 'required|string',
         ];
     }
 }

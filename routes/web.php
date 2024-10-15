@@ -13,12 +13,16 @@ Route::middleware('auth')->group(function () {
 
     Route::prefix('connection')->group(function () {
         Route::get('/', [DBConnectionController::class, 'index'])->name('connection.index');
-        Route::get('/create', [DBConnectionController::class, 'create'])->name('connection.create');
         Route::post('/', [DBConnectionController::class, 'store'])->name('connection.store');
+        Route::get('/all', [DBConnectionController::class, 'all'])->name('connection.all');
         Route::get('/{dBConnection}', [DBConnectionController::class, 'show'])->name('connection.show');
         Route::get('/{dBConnection}/edit', [DBConnectionController::class, 'edit'])->name('connection.edit');
         Route::patch('/{dBConnection}', [DBConnectionController::class, 'update'])->name('connection.update');
         Route::delete('/{dBConnection}', [DBConnectionController::class, 'destroy'])->name('connection.destroy');
+
+        //activate and deactivate
+        Route::patch('/{dBConnection}/activate', [DBConnectionController::class, 'activate'])->name('connection.activate');
+        Route::patch('/{dBConnection}/deactivate', [DBConnectionController::class, 'deactivate'])->name('connection.deactivate');
     });
 
     Route::prefix('profile')->group(function () {
