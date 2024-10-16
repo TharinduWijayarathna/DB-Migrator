@@ -52,7 +52,9 @@ const closeModal = () => {
 
 const getConnections = async () => {
     try {
-        const response = await axios.get(route('connection.all'));
+        const response = await axios.get(route('connection.all'), {
+            params: filters.value,
+        });
         connections.value = response.data.data;
         pagination.value = response.data.meta;
     } catch (error) {
@@ -117,8 +119,21 @@ onMounted(() => {
             <Breadcrumb :items="breadcrumbItems" />
         </template>
 
-        <div class="py-5 text-end sm:px-6 lg:px-8">
-            <PrimaryButton @click="openModal"> Add Connection </PrimaryButton>
+        <div class="flex">
+            <div class="flex-1">
+                <div
+                    class="mt-6 flex items-center justify-between sm:rounded-lg sm:px-6 lg:px-8"
+                >
+                    <h2 class="text-lg font-medium text-gray-900">
+                        Connect Database
+                    </h2>
+                </div>
+            </div>
+            <div class="py-5 text-end sm:px-6 lg:px-8">
+                <PrimaryButton @click="openModal">
+                    Add Connection
+                </PrimaryButton>
+            </div>
         </div>
 
         <div class="mx-auto sm:px-6 lg:px-8">
@@ -327,6 +342,7 @@ onMounted(() => {
                                         "
                                     >
                                         <a
+                                            v-bind:key="page"
                                             href="#"
                                             class="relative z-10 inline-flex items-center px-4 py-2 text-sm font-semibold"
                                             :class="
