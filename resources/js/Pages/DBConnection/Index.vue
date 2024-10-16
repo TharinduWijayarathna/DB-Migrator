@@ -27,9 +27,19 @@ const form = useForm({
     password: '',
 });
 
+const filters = ref({
+    page: 1,
+});
+
+const pagination = ref({});
 const connections = ref([]);
 
 const isDisabled = ref(false);
+
+const setPage = (newPage) => {
+    filters.value.page = newPage;
+    getConnections();
+};
 
 const openModal = () => {
     isModalOpen.value = true;
@@ -44,6 +54,7 @@ const getConnections = async () => {
     try {
         const response = await axios.get(route('connection.all'));
         connections.value = response.data.data;
+        pagination.value = response.data.meta;
     } catch (error) {
         console.error(error);
     }
@@ -234,12 +245,22 @@ onMounted(() => {
                         <a
                             href="#"
                             class="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                            :class="
+                                pagination.current_page == 1 ? 'disabled' : ''
+                            "
+                            @click="setPage(pagination.current_page - 1)"
                         >
                             Previous
                         </a>
                         <a
                             href="#"
                             class="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                            :class="
+                                pagination.current_page == pagination.last_page
+                                    ? 'disabled'
+                                    : ''
+                            "
+                            @click="setPage(pagination.current_page + 1)"
                         >
                             Next
                         </a>
@@ -250,11 +271,17 @@ onMounted(() => {
                         <div>
                             <p class="pl-1 text-sm text-gray-700">
                                 Showing
-                                <span class="font-medium">1</span>
+                                <span class="font-medium">{{
+                                    pagination.from
+                                }}</span>
                                 to
-                                <span class="font-medium">10</span>
+                                <span class="font-medium">{{
+                                    pagination.to
+                                }}</span>
                                 of
-                                <span class="font-medium">97</span>
+                                <span class="font-medium">{{
+                                    pagination.total
+                                }}</span>
                                 results
                             </p>
                         </div>
@@ -266,6 +293,14 @@ onMounted(() => {
                                 <a
                                     href="#"
                                     class="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+                                    :class="
+                                        pagination.current_page == 1
+                                            ? 'disabled'
+                                            : ''
+                                    "
+                                    @click="
+                                        setPage(pagination.current_page - 1)
+                                    "
                                 >
                                     <span class="sr-only">Previous</span>
                                     <svg
@@ -281,51 +316,42 @@ onMounted(() => {
                                         />
                                     </svg>
                                 </a>
-                                <a
-                                    href="#"
-                                    aria-current="page"
-                                    class="relative z-10 inline-flex items-center bg-indigo-600 px-4 py-2 text-sm font-semibold text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                >
-                                    1
-                                </a>
-                                <a
-                                    href="#"
-                                    class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
-                                >
-                                    2
-                                </a>
-                                <a
-                                    href="#"
-                                    class="relative hidden items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 md:inline-flex"
-                                >
-                                    3
-                                </a>
-                                <span
-                                    class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-700 ring-1 ring-inset ring-gray-300 focus:outline-offset-0"
-                                >
-                                    ...
-                                </span>
-                                <a
-                                    href="#"
-                                    class="relative hidden items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 md:inline-flex"
-                                >
-                                    8
-                                </a>
-                                <a
-                                    href="#"
-                                    class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
-                                >
-                                    9
-                                </a>
-                                <a
-                                    href="#"
-                                    class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
-                                >
-                                    10
-                                </a>
+                                <template v-for="page in pagination.last_page">
+                                    <template
+                                        v-if="
+                                            page == 1 ||
+                                            page == pagination.last_page ||
+                                            Math.abs(
+                                                page - pagination.current_page,
+                                            ) < 5
+                                        "
+                                    >
+                                        <a
+                                            href="#"
+                                            class="relative z-10 inline-flex items-center px-4 py-2 text-sm font-semibold"
+                                            :class="
+                                                pagination.current_page == page
+                                                    ? 'bg-indigo-600 text-white'
+                                                    : 'text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50'
+                                            "
+                                            @click="setPage(page)"
+                                        >
+                                            {{ page }}
+                                        </a>
+                                    </template>
+                                </template>
                                 <a
                                     href="#"
                                     class="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+                                    :class="
+                                        pagination.current_page ==
+                                        pagination.last_page
+                                            ? 'disabled'
+                                            : ''
+                                    "
+                                    @click="
+                                        setPage(pagination.current_page + 1)
+                                    "
                                 >
                                     <span class="sr-only">Next</span>
                                     <svg

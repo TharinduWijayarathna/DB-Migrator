@@ -6,11 +6,14 @@ use App\Http\Requests\StoreDBConnectionRequest;
 use App\Http\Requests\UpdateDBConnectionRequest;
 use App\Http\Resources\DBConnection\FilterDBConnectionsResource;
 use App\Models\DBConnection;
+use Illuminate\Http\Request as HttpRequest;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
+use Spatie\QueryBuilder\QueryBuilder;
 
 class DBConnectionController extends Controller
 {
@@ -41,10 +44,28 @@ class DBConnectionController extends Controller
     /**
      * Display the specified resource.
      */
-    public function all()
+    public function all(HttpRequest $request)
     {
         $query = DBConnection::query();
-        return FilterDBConnectionsResource::collection($query->paginate());
+
+        if (!empty($request->input('username'))) {
+            $query->where('name', 'like', '%' . $request->input('username') . '%');
+        }
+        if (!empty($request->input('host'))) {
+            $query->where('host', 'like', '%' . $request->input('host') . '%');
+        }
+        if (!empty($request->input('port'))) {
+            $query->where('port', 'like', '%' . $request->input('port') . '%');
+        }
+        if (!empty($request->input('database'))) {
+            $query->where('database', 'like', '%' . $request->input('database') . '%');
+        }
+
+        $payload = QueryBuilder::for($query)
+            ->allowedSorts(['id', 'name'])
+            ->orderBy('id', 'desc')
+            ->paginate(request('per_page', config('basic.pagination_per_page')));
+        return FilterDBConnectionsResource::collection($payload);
     }
 
     /**
