@@ -13,13 +13,48 @@ import { Head, useForm } from '@inertiajs/vue3';
 import axios from 'axios';
 import { onMounted, ref } from 'vue';
 
-const breadcrumbItems = [
+interface BreadcrumbItem {
+    name: string;
+    href: string;
+}
+
+interface ConnectionForm {
+    username: string;
+    host: string;
+    port: string;
+    database: string;
+    password: string;
+}
+
+interface Filters {
+    page: number;
+}
+
+interface Pagination {
+    current_page: number;
+    last_page: number;
+    from: number;
+    to: number;
+    total: number;
+}
+
+interface Connection {
+    id: number;
+    username: string;
+    host: string;
+    port: string;
+    database: string;
+    password: string;
+    is_active: number;
+}
+
+const breadcrumbItems: BreadcrumbItem[] = [
     { name: 'Connect Database', href: route('connection.index') },
 ];
 
-const isModalOpen = ref(false);
+const isModalOpen = ref<boolean>(false);
 
-const form = useForm({
+const form = useForm<ConnectionForm>({
     username: '',
     host: '',
     port: '',
@@ -27,32 +62,35 @@ const form = useForm({
     password: '',
 });
 
-const filters = ref({
+const filters = ref<Filters>({
     page: 1,
 });
 
-const pagination = ref({});
-const connections = ref([]);
+const pagination = ref<Pagination>({} as Pagination);
+const connections = ref<Connection[]>([]);
 
-const isDisabled = ref(false);
+const isDisabled = ref<boolean>(false);
 
-const setPage = (newPage) => {
+const setPage = (newPage: number): void => {
     filters.value.page = newPage;
     getConnections();
 };
 
-const openModal = () => {
+const openModal = (): void => {
     isModalOpen.value = true;
 };
 
-const closeModal = () => {
+const closeModal = (): void => {
     isModalOpen.value = false;
     form.reset();
 };
 
-const getConnections = async () => {
+const getConnections = async (): Promise<void> => {
     try {
-        const response = await axios.get(route('connection.all'), {
+        const response = await axios.get<{
+            data: Connection[];
+            meta: Pagination;
+        }>(route('connection.all'), {
             params: filters.value,
         });
         connections.value = response.data.data;
@@ -62,17 +100,17 @@ const getConnections = async () => {
     }
 };
 
-const submit = async () => {
+const submit = async (): Promise<void> => {
     try {
         await axios.post(route('connection.store'), form.data());
         closeModal();
         getConnections();
-    } catch (error) {
-        form.setErrors(error.response.data.errors);
+    } catch (error: any) {
+        console.error(error);
     }
 };
 
-const activate = async (connection) => {
+const activate = async (connection: Connection): Promise<void> => {
     freezeActions();
     try {
         await axios.patch(route('connection.activate', connection.id));
@@ -84,7 +122,7 @@ const activate = async (connection) => {
     }
 };
 
-const deactivate = async (connection) => {
+const deactivate = async (connection: Connection): Promise<void> => {
     try {
         await axios.patch(route('connection.deactivate', connection.id));
         getConnections();
@@ -93,18 +131,19 @@ const deactivate = async (connection) => {
     }
 };
 
-const freezeActions = () => {
-    isDisabled.value = true; // Disable the buttons
+const freezeActions = (): void => {
+    isDisabled.value = true;
 };
 
-const unfreezeActions = () => {
-    isDisabled.value = false; // Enable the buttons
+const unfreezeActions = (): void => {
+    isDisabled.value = false;
 };
 
 onMounted(() => {
     getConnections();
 });
 </script>
+
 <template>
     <Head title="Dashboard" />
 
