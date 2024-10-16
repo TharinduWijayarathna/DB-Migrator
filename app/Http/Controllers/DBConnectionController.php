@@ -151,7 +151,7 @@ class DBConnectionController extends Controller
             DBConnection::where('id', '!=', $dBConnection->id)->update(['is_active' => false]);
 
             $dBConnection->refresh();
-            return $dBConnection;
+            return response()->json(['message' => 'Connection activated successfully']);
         } catch (\Exception $e) {
             return response()->json(['message' => 'An error occurred while activating the connection: ' . $e->getMessage()], 500);
         } finally {
