@@ -9,10 +9,12 @@ use App\Models\DBConnection;
 use Illuminate\Http\Request as HttpRequest;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
+use PDO;
 use Spatie\QueryBuilder\QueryBuilder;
 
 class DBConnectionController extends Controller
@@ -102,55 +104,62 @@ class DBConnectionController extends Controller
 
     public function activate(DBConnection $dBConnection)
     {
+        $validator = Validator::make($dBConnection->toArray(), [
+            'host' => 'required|string',
+            'port' => 'required|integer|between:1,65535',
+            'database' => 'required|string',
+            'username' => 'required|string',
+            'password' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            throw ValidationException::withMessages($validator->errors()->toArray());
+        }
+
+        if ($dBConnection->is_active) {
+            return response()->json(['message' => 'Connection is already active'], 400);
+        }
+
         try {
-            // Validate the DBConnection object
-            $validator = Validator::make($dBConnection->toArray(), [
-                'host' => 'required|string',
-                'port' => 'required|integer|between:1,65535',
-                'database' => 'required|string',
-                'username' => 'required|string',
-                'password' => 'required|string',
+            $originalConnection = config('database.default');
+
+            config([
+                "database.connections.mysql_static" => [
+                    'driver' => 'mysql',
+                    'host' => $dBConnection->host,
+                    'port' => $dBConnection->port,
+                    'database' => $dBConnection->database,
+                    'username' => $dBConnection->username,
+                    'password' => $dBConnection->password,
+                    'charset' => 'utf8mb4',
+                    'collation' => 'utf8mb4_unicode_ci',
+                    'prefix' => '',
+                    'strict' => true,
+                    'engine' => null,
+                    'options' => [
+                        PDO::ATTR_TIMEOUT => 5,
+                    ],
+                ]
             ]);
 
-            if ($validator->fails()) {
-                throw new ValidationException($validator);
-            }
+            $newConnection = DB::connection('mysql_static');
+            $newConnection->getPdo();
 
-            Config::set('database.connections.mysql', [
-                'driver' => 'mysql',
-                'host' => $dBConnection->host,
-                'port' => $dBConnection->port,
-                'database' => $dBConnection->database,
-                'username' => $dBConnection->username,
-                'password' => $dBConnection->password,
-                'charset' => 'utf8mb4',
-                'collation' => 'utf8mb4_unicode_ci',
-                'prefix' => '',
-                'strict' => true,
-                'engine' => null,
-                'options' => [
-                    \PDO::ATTR_TIMEOUT => 5,
-                ],
-            ]);
+            DB::setDefaultConnection($originalConnection);
 
-            try {
-                DB::purge('mysql');
-                $connection = DB::connection('mysql')->getPdo();
-                $connection->query('SELECT 1');
-            } catch (\PDOException $e) {
-                throw new \Exception('Database connection failed: ' . $e->getMessage());
-            }
-
+            DBConnection::where('id', $dBConnection->id)->update(['is_active' => true]);
             DBConnection::where('id', '!=', $dBConnection->id)->update(['is_active' => false]);
-            $dBConnection->update(['is_active' => true]);
+
+            $dBConnection->refresh();
             return $dBConnection;
-        } catch (ValidationException $e) {
-            return response()->json(['message' => 'Validation failed', 'errors' => $e->errors()], 422);
         } catch (\Exception $e) {
-            return response()->json(['message' => 'An error occurred: ' . $e->getMessage()], 500);
+            return response()->json(['message' => 'An error occurred while activating the connection: ' . $e->getMessage()], 500);
+        } finally {
+            if (isset($originalConnection)) {
+                DB::setDefaultConnection($originalConnection);
+            }
         }
     }
-
 
     public function deactivate(DBConnection $dBConnection)
     {

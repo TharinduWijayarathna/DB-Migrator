@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('host')->nullable();
             $table->string('port')->nullable();
             $table->string('database')->nullable();
-            $table->enum('is_active', ['0', '1'])->default('0');
+            $table->integer('is_active')->default(1);
             $table->softDeletes();
             $table->timestamps();
         });
