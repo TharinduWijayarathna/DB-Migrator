@@ -76,7 +76,7 @@ const availableTables = ['users', 'products', 'orders'];
                     <SecondaryButton @click="$refs.restoreFileInput.click()">
                         Select File
                     </SecondaryButton>
-                    <span class="ml-2">
+                    <span class="ml-2 text-white">
                         {{ fileName || 'No file selected' }}
                     </span>
                 </label>
