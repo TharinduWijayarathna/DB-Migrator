@@ -200,7 +200,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <Head title="Database Management" />
+    <Head title="Backup & Restore" />
 
     <AuthenticatedLayout>
         <template #breadcrumb>

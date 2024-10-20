@@ -195,7 +195,7 @@ const page = usePage();
                 </svg>
 
                 <span class="mx-4 pt-1" :class="{ hidden: isCollapsed }">
-                    Backup and Restore
+                    Backup & Restore
                 </span>
             </NavLink>
         </nav>
