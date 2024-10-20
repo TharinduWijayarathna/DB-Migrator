@@ -1,12 +1,25 @@
 <script setup lang="ts">
 import Breadcrumb from '@/Components/Breadcrumb.vue';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
+import SecondaryButton from '@/Components/SecondaryButton.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head } from '@inertiajs/vue3';
+import { ref } from 'vue';
 
 interface BreadcrumbItem {
     name: string;
     href: string;
 }
+
+const fileName = ref<string | null>(null);
+
+const handleFileChange = (event: Event) => {
+    const target = event.target as HTMLInputElement;
+    if (target.files && target.files.length > 0) {
+        const file = target.files[0];
+        fileName.value = file.name;
+    }
+};
 
 const breadcrumbItems: BreadcrumbItem[] = [
     { name: 'Handle Spreadsheets', href: route('spreadsheet.index') },
@@ -37,28 +50,11 @@ const availableTables = ['users', 'products', 'orders'];
             </h2>
 
             <!-- Import Section -->
-            <div class="mb-8 rounded-lg bg-gray-700 p-4">
+            <div class="mb-8 rounded-lg bg-gray-800 p-4">
                 <h3 class="mb-4 text-xl font-semibold text-white">
-                    Import Excel
+                    Import Spreadsheet
                 </h3>
-                <input
-                    type="file"
-                    accept=".xlsx,.xls"
-                    class="mb-4 text-white"
-                />
-                <button
-                    class="rounded bg-blue-500 px-4 py-2 text-white transition-colors hover:bg-blue-600"
-                >
-                    Import
-                </button>
-            </div>
-
-            <!-- Export Section -->
-            <div class="mb-8 rounded-lg bg-gray-700 p-4">
-                <h3 class="mb-4 text-xl font-semibold text-white">
-                    Export Excel
-                </h3>
-                <select class="mb-4 rounded bg-gray-600 p-2 text-white">
+                <select class="mb-4 w-1/4 rounded bg-gray-600 p-2 text-white">
                     <option value="">Select a table</option>
                     <option
                         v-for="table in availableTables"
@@ -68,15 +64,46 @@ const availableTables = ['users', 'products', 'orders'];
                         {{ table }}
                     </option>
                 </select>
-                <button
-                    class="rounded bg-green-500 px-4 py-2 text-white transition-colors hover:bg-green-600"
-                >
-                    Export
-                </button>
+                <br />
+                <input
+                    type="file"
+                    ref="restoreFileInput"
+                    class="hidden"
+                    @change="handleFileChange"
+                    accept=".sql"
+                />
+                <label class="mb-5 flex items-center">
+                    <SecondaryButton @click="$refs.restoreFileInput.click()">
+                        Select File
+                    </SecondaryButton>
+                    <span class="ml-2">
+                        {{ fileName || 'No file selected' }}
+                    </span>
+                </label>
+                <PrimaryButton>Import Spreadsheet</PrimaryButton>
+            </div>
+
+            <!-- Export Section -->
+            <div class="mb-8 rounded-lg bg-gray-800 p-4">
+                <h3 class="mb-4 text-xl font-semibold text-white">
+                    Export Spreadsheet
+                </h3>
+                <select class="mb-4 w-1/4 rounded bg-gray-600 p-2 text-white">
+                    <option value="">Select a table</option>
+                    <option
+                        v-for="table in availableTables"
+                        :key="table"
+                        :value="table"
+                    >
+                        {{ table }}
+                    </option>
+                </select>
+                <br />
+                <PrimaryButton>Export Spreadsheet</PrimaryButton>
             </div>
 
             <!-- Dummy Data Table -->
-            <div class="rounded-lg bg-gray-700 p-4">
+            <div class="rounded-lg bg-gray-800 p-4">
                 <h3 class="mb-4 text-xl font-semibold text-white">
                     Imported Data (Example)
                 </h3>
