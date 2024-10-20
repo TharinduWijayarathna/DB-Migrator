@@ -81,10 +81,10 @@ const page = usePage();
         <nav>
             <NavLink
                 :href="route('dashboard')"
-                :active="page.component === 'Dashboard/Dashboard'"
+                :active="page.component === 'Dashboard/Index'"
                 class="flex w-full items-center px-6 py-3 pt-3 text-white transition-colors duration-200"
                 :class="[
-                    page.component === 'Dashboard/Dashboard'
+                    page.component === 'Dashboard/Index'
                         ? 'bg-dark-secondary text-white'
                         : 'hover:bg-white hover:text-dark-secondary',
                 ]"
