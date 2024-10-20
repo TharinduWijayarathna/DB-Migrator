@@ -140,6 +140,35 @@ const page = usePage();
                     Connect Database
                 </span>
             </NavLink>
+            <NavLink
+                :href="route('query.index')"
+                :active="page.component === 'Query/Index'"
+                class="flex w-full items-center px-6 py-3 pt-3 text-white transition-colors duration-200"
+                :class="[
+                    page.component === 'Query/Index'
+                        ? 'bg-dark-secondary text-white'
+                        : 'hover:bg-white hover:text-dark-secondary',
+                ]"
+            >
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    class="size-6"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="m6.75 7.5 3 2.25-3 2.25m4.5 0h3m-9 8.25h13.5A2.25 2.25 0 0 0 21 18V6a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 6v12a2.25 2.25 0 0 0 2.25 2.25Z"
+                    />
+                </svg>
+
+                <span class="mx-4 pt-1" :class="{ hidden: isCollapsed }">
+                    Run SQL Query
+                </span>
+            </NavLink>
         </nav>
     </aside>
 </template>

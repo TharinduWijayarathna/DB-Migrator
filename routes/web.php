@@ -3,6 +3,7 @@
 use App\Http\Controllers\BaseController;
 use App\Http\Controllers\DBConnectionController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\QueryController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -19,10 +20,12 @@ Route::middleware('auth')->group(function () {
         Route::get('/{dBConnection}/edit', [DBConnectionController::class, 'edit'])->name('connection.edit');
         Route::patch('/{dBConnection}', [DBConnectionController::class, 'update'])->name('connection.update');
         Route::delete('/{dBConnection}', [DBConnectionController::class, 'destroy'])->name('connection.destroy');
-
-        //activate and deactivate
         Route::patch('/{dBConnection}/activate', [DBConnectionController::class, 'activate'])->name('connection.activate');
         Route::patch('/{dBConnection}/deactivate', [DBConnectionController::class, 'deactivate'])->name('connection.deactivate');
+    });
+
+    Route::prefix('query')->group(function () {
+        Route::get('/', [QueryController::class, 'index'])->name('query.index');
     });
 
     Route::prefix('profile')->group(function () {
