@@ -26,6 +26,7 @@ Route::middleware('auth')->group(function () {
 
     Route::prefix('query')->group(function () {
         Route::get('/', [QueryController::class, 'index'])->name('query.index');
+        Route::post('/', [QueryController::class, 'run'])->name('query.run');
     });
 
     Route::prefix('profile')->group(function () {

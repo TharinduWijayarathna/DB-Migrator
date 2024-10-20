@@ -2,6 +2,7 @@
 import Breadcrumb from '@/Components/Breadcrumb.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head } from '@inertiajs/vue3';
+import axios from 'axios';
 import { ref, watch } from 'vue';
 
 interface BreadcrumbItem {
@@ -16,13 +17,17 @@ const breadcrumbItems: BreadcrumbItem[] = [
 const sqlQuery = ref('');
 const queryOutput = ref('');
 const syntaxError = ref('');
+const errorMessage = ref('');
 
-const runQuery = () => {
-    if (!syntaxError.value) {
-        // Here you would typically send the query to your backend
-        // For this example, we'll just set some dummy output
-        queryOutput.value =
-            'Query executed successfully. Results would appear here.';
+const runQuery = async () => {
+    errorMessage.value = ''; // Clear any previous errors
+    const response = await axios.post(route('query.run'), {
+        query: sqlQuery.value,
+    });
+    if (response.data.success) {
+        queryOutput.value = JSON.stringify(response.data.results, null, 2);
+    } else {
+        errorMessage.value = response.data.error;
     }
 };
 
@@ -157,6 +162,9 @@ watch(sqlQuery, (newQuery) => {
                 <h3 class="mb-2 text-lg font-medium text-white">
                     Query Output:
                 </h3>
+                <div v-if="errorMessage" class="error-message">
+                    {{ errorMessage }}
+                </div>
                 <pre
                     class="overflow-x-auto rounded-md bg-gray-700 p-4 text-gray-200"
                     >{{ queryOutput }}</pre
