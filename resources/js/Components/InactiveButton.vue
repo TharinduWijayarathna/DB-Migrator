@@ -15,8 +15,8 @@ const props = defineProps({
         :class="[
             'inline-flex items-center rounded-md border px-2 py-1 text-xs font-semibold uppercase tracking-widest transition duration-150 ease-in-out',
             disabled
-                ? 'cursor-not-allowed border-transparent bg-gray-400 text-gray-700'
-                : 'bg-red-600 text-white hover:bg-red-500 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 active:bg-red-700',
+                ? 'cursor-not-allowed border-transparent bg-gray-600 text-gray-300'
+                : 'bg-red-700 text-white hover:bg-red-600 focus:ring-2 focus:ring-red-600 focus:ring-offset-2 active:bg-red-800',
         ]"
     >
         <slot />

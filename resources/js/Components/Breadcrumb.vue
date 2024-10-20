@@ -29,8 +29,8 @@ const breadcrumbItems = computed(() => [
                         :href="item.href"
                         :class="[
                             index === breadcrumbItems.length - 1
-                                ? 'text-gray-500'
-                                : 'text-gray-400 hover:text-gray-500',
+                                ? 'text-gray-300'
+                                : 'text-gray-200 hover:text-gray-300',
                             index === 0 ? '' : 'ml-1',
                         ]"
                         :aria-current="

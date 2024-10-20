@@ -22,19 +22,19 @@ const toggleSidebar = () => {
 <template>
     <aside
         :class="[
-            'bg-white text-black transition-all duration-300 ease-in-out',
+            'bg-dark-navbar text-dark-text transition-all duration-300 ease-in-out',
             sidebarWidth,
         ]"
     >
         <div class="flex items-center justify-between p-5">
             <Link :href="route('dashboard')" v-show="!collapsed">
                 <ApplicationLogo
-                    class="block h-9 w-auto fill-current text-black"
+                    class="text-dark-text block h-9 w-auto fill-current"
                 />
             </Link>
             <button
                 @click="toggleSidebar"
-                class="rounded p-1 hover:bg-black hover:text-white focus:outline-none"
+                class="hover:bg-dark-hover rounded p-1 focus:outline-none"
             >
                 <svg
                     class="h-6 w-6"
@@ -56,11 +56,11 @@ const toggleSidebar = () => {
             <NavLink
                 :href="route('dashboard')"
                 :active="route().current('dashboard')"
-                class="flex w-full items-center px-6 py-3 pt-3 transition-colors duration-200"
+                class="flex w-full items-center px-6 py-3 pt-3 text-white transition-colors duration-200"
                 :class="[
                     route().current('dashboard')
-                        ? 'bg-gray-200'
-                        : 'hover:bg-gray-300',
+                        ? 'bg-dark-secondary'
+                        : 'hover:bg-white',
                 ]"
             >
                 <svg
@@ -82,11 +82,11 @@ const toggleSidebar = () => {
             <NavLink
                 :href="route('connection.index')"
                 :active="route().current('connection.index')"
-                class="flex w-full items-center px-6 py-3 pt-3 transition-colors duration-200"
+                class="flex w-full items-center px-6 py-3 pt-3 text-white transition-colors duration-200"
                 :class="[
                     route().current('connection.index')
-                        ? 'bg-gray-200'
-                        : 'hover:bg-gray-300',
+                        ? 'bg-dark-secondary'
+                        : 'hover:bg-white',
                 ]"
             >
                 <!-- New Database SVG Icon -->

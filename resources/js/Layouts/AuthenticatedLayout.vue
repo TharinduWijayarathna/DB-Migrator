@@ -12,14 +12,14 @@ const toggleSidebar = () => {
 </script>
 
 <template>
-    <div class="flex h-screen bg-gray-100">
+    <div class="flex h-screen bg-dark-background">
         <!-- Sidebar -->
         <Sidebar :collapsed="sidebarCollapsed" @toggle="toggleSidebar" />
 
         <!-- Main Content -->
         <div class="flex flex-1 flex-col overflow-hidden">
             <!-- Top Navbar -->
-            <header class="bg-white shadow-sm">
+            <header class="bg-dark-navbar shadow-sm">
                 <div class="mx-auto flex items-center justify-between py-6">
                     <div class="">
                         <slot name="breadcrumb"></slot>
@@ -27,7 +27,7 @@ const toggleSidebar = () => {
                     <Dropdown align="right" width="48" class="px-5">
                         <template #trigger>
                             <button
-                                class="flex items-center text-sm font-medium text-gray-500 transition duration-150 ease-in-out hover:text-gray-700 focus:outline-none"
+                                class="flex items-center text-sm font-medium text-dark-text transition duration-150 ease-in-out hover:text-gray-300 focus:outline-none"
                             >
                                 <div>{{ $page.props.auth.user.name }}</div>
                                 <div class="ml-1">
@@ -63,7 +63,7 @@ const toggleSidebar = () => {
             </header>
 
             <!-- Page Content -->
-            <main class="flex-1 overflow-y-auto overflow-x-hidden bg-gray-100">
+            <main class="flex-1 overflow-y-auto overflow-x-hidden bg-dark-background">
                 <div class="container-fluid mx-auto">
                     <slot />
                 </div>

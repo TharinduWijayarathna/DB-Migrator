@@ -163,7 +163,7 @@ onMounted(() => {
                 <div
                     class="mt-6 flex items-center justify-between sm:rounded-lg sm:px-6 lg:px-8"
                 >
-                    <h2 class="text-lg font-medium text-gray-900">
+                    <h2 class="text-lg font-medium text-white">
                         Connect Database
                     </h2>
                 </div>
@@ -177,66 +177,66 @@ onMounted(() => {
 
         <div class="mx-auto sm:px-6 lg:px-8">
             <div
-                class="overflow-hidden bg-white p-5 shadow-sm sm:rounded-lg sm:px-6"
+                class="overflow-hidden bg-gray-800 p-5 shadow-sm sm:rounded-lg sm:px-6"
             >
-                <table class="min-w-full divide-y divide-gray-200">
+                <table class="min-w-full divide-y divide-gray-600">
                     <thead>
                         <tr>
                             <th
-                                class="bg-gray-50 px-2 py-3 text-left text-xs font-medium uppercase leading-4 tracking-wider text-gray-500"
+                                class="bg-gray-700 px-2 py-3 text-left text-xs font-medium uppercase leading-4 tracking-wider text-gray-300"
                             >
                                 Username
                             </th>
                             <th
-                                class="bg-gray-50 px-2 py-3 text-left text-xs font-medium uppercase leading-4 tracking-wider text-gray-500"
+                                class="bg-gray-700 px-2 py-3 text-left text-xs font-medium uppercase leading-4 tracking-wider text-gray-300"
                             >
                                 Host
                             </th>
                             <th
-                                class="bg-gray-50 px-2 py-3 text-left text-xs font-medium uppercase leading-4 tracking-wider text-gray-500"
+                                class="bg-gray-700 px-2 py-3 text-left text-xs font-medium uppercase leading-4 tracking-wider text-gray-300"
                             >
                                 Port
                             </th>
                             <th
-                                class="bg-gray-50 px-2 py-3 text-left text-xs font-medium uppercase leading-4 tracking-wider text-gray-500"
+                                class="bg-gray-700 px-2 py-3 text-left text-xs font-medium uppercase leading-4 tracking-wider text-gray-300"
                             >
                                 Database
                             </th>
                             <th
-                                class="bg-gray-50 px-2 py-3 text-left text-xs font-medium uppercase leading-4 tracking-wider text-gray-500"
+                                class="bg-gray-700 px-2 py-3 text-left text-xs font-medium uppercase leading-4 tracking-wider text-gray-300"
                             >
                                 Password
                             </th>
-                            <th class="bg-gray-50 px-6 py-3"></th>
+                            <th class="bg-gray-700 px-6 py-3"></th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-gray-200 bg-white">
+                    <tbody class="divide-y divide-gray-600 bg-gray-800">
                         <tr
                             v-for="connection in connections"
                             :key="connection.id"
                         >
                             <td class="whitespace-no-wrap px-2 py-4">
-                                <div class="text-sm leading-5 text-gray-900">
+                                <div class="text-sm leading-5 text-gray-200">
                                     {{ connection.username }}
                                 </div>
                             </td>
                             <td class="whitespace-no-wrap px-2 py-4">
-                                <div class="text-sm leading-5 text-gray-900">
+                                <div class="text-sm leading-5 text-gray-200">
                                     {{ connection.host }}
                                 </div>
                             </td>
                             <td class="whitespace-no-wrap px-2 py-4">
-                                <div class="text-sm leading-5 text-gray-900">
+                                <div class="text-sm leading-5 text-gray-200">
                                     {{ connection.port }}
                                 </div>
                             </td>
                             <td class="whitespace-no-wrap px-2 py-4">
-                                <div class="text-sm leading-5 text-gray-900">
+                                <div class="text-sm leading-5 text-gray-200">
                                     {{ connection.database }}
                                 </div>
                             </td>
                             <td class="whitespace-no-wrap px-2 py-4">
-                                <div class="text-sm leading-5 text-gray-900">
+                                <div class="text-sm leading-5 text-gray-200">
                                     {{ connection.password }}
                                 </div>
                             </td>
@@ -293,12 +293,12 @@ onMounted(() => {
                     </tbody>
                 </table>
                 <div
-                    class="flex items-center justify-between border-t border-gray-200 bg-white py-3"
+                    class="flex items-center justify-between border-t border-gray-700 bg-gray-800 py-3"
                 >
                     <div class="flex flex-1 justify-between sm:hidden">
                         <a
                             href="#"
-                            class="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                            class="relative inline-flex items-center rounded-md border border-gray-600 bg-gray-800 px-4 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700"
                             :class="
                                 pagination.current_page == 1 ? 'disabled' : ''
                             "
@@ -308,7 +308,7 @@ onMounted(() => {
                         </a>
                         <a
                             href="#"
-                            class="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                            class="relative ml-3 inline-flex items-center rounded-md border border-gray-600 bg-gray-800 px-4 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700"
                             :class="
                                 pagination.current_page == pagination.last_page
                                     ? 'disabled'
@@ -323,17 +323,17 @@ onMounted(() => {
                         class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between"
                     >
                         <div>
-                            <p class="pl-1 text-sm text-gray-700">
+                            <p class="pl-1 text-sm text-gray-300">
                                 Showing
-                                <span class="font-medium">{{
+                                <span class="font-medium text-white">{{
                                     pagination.from
                                 }}</span>
                                 to
-                                <span class="font-medium">{{
+                                <span class="font-medium text-white">{{
                                     pagination.to
                                 }}</span>
                                 of
-                                <span class="font-medium">{{
+                                <span class="font-medium text-white">{{
                                     pagination.total
                                 }}</span>
                                 results
@@ -346,7 +346,7 @@ onMounted(() => {
                             >
                                 <a
                                     href="#"
-                                    class="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+                                    class="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-600 hover:bg-gray-700 focus:z-20 focus:outline-offset-0"
                                     :class="
                                         pagination.current_page == 1
                                             ? 'disabled'
@@ -358,7 +358,7 @@ onMounted(() => {
                                 >
                                     <span class="sr-only">Previous</span>
                                     <svg
-                                        class="h-5 w-5"
+                                        class="h-5 w-5 text-gray-300"
                                         viewBox="0 0 20 20"
                                         fill="currentColor"
                                         aria-hidden="true"
@@ -387,7 +387,7 @@ onMounted(() => {
                                             :class="
                                                 pagination.current_page == page
                                                     ? 'bg-indigo-600 text-white'
-                                                    : 'text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50'
+                                                    : 'text-gray-300 ring-1 ring-inset ring-gray-600 hover:bg-gray-700'
                                             "
                                             @click="setPage(page)"
                                         >
@@ -397,7 +397,7 @@ onMounted(() => {
                                 </template>
                                 <a
                                     href="#"
-                                    class="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+                                    class="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-600 hover:bg-gray-700 focus:z-20 focus:outline-offset-0"
                                     :class="
                                         pagination.current_page ==
                                         pagination.last_page
@@ -410,7 +410,7 @@ onMounted(() => {
                                 >
                                     <span class="sr-only">Next</span>
                                     <svg
-                                        class="h-5 w-5"
+                                        class="h-5 w-5 text-gray-300"
                                         viewBox="0 0 20 20"
                                         fill="currentColor"
                                         aria-hidden="true"
@@ -432,7 +432,7 @@ onMounted(() => {
         <Modal :show="isModalOpen" @close="closeModal">
             <form @submit.prevent="submit">
                 <div class="p-6">
-                    <h2 class="text-lg font-medium text-gray-900">
+                    <h2 class="text-lg font-medium text-white">
                         Create New Connection
                     </h2>
 
@@ -516,7 +516,7 @@ onMounted(() => {
                 </div>
 
                 <div
-                    class="flex items-center justify-end bg-gray-50 p-6 text-right"
+                    class="flex items-center justify-end bg-gray-900 p-6 text-right"
                 >
                     <SecondaryButton @click="closeModal" class="mr-2"
                         >Cancel</SecondaryButton

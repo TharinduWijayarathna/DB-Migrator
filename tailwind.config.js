@@ -15,6 +15,15 @@ export default {
             fontFamily: {
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
             },
+            colors: {
+                dark: {
+                    background: '#0d1729cc', // Dark navy background for the body
+                    navbar: '#0F172A', // Darker color for the navbar
+                    text: '#E5E7EB',
+                    secondary: '#334155', // Dark blue for secondary elements (e.g., shadows, borders)
+                    hover: '#2563EB', // A blue accent color for hover states
+                },
+            },
         },
     },
 
