@@ -41,7 +41,7 @@ const breadcrumbItems: BreadcrumbItem[] = [
 
         <div class="mx-auto sm:px-6 lg:px-8">
             <div
-                class="overflow-hidden bg-white p-5 shadow-sm sm:rounded-lg sm:px-6"
+                class="overflow-hidden bg-gray-800 p-5 shadow-sm sm:rounded-lg sm:px-6"
             ></div>
         </div>
     </AuthenticatedLayout>
