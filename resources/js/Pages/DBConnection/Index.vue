@@ -145,7 +145,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <Head title="Dashboard" />
+    <Head title="DB Connections" />
 
     <AuthenticatedLayout>
         <template #breadcrumb>
