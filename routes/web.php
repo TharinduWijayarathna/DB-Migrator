@@ -6,6 +6,7 @@ use App\Http\Controllers\DBConnectionController;
 use App\Http\Controllers\ExcelController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\QueryController;
+use App\Http\Controllers\SpreadsheetController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -43,10 +44,10 @@ Route::middleware('auth')->group(function () {
         Route::post('/restore', [BackupRestoreController::class, 'restore'])->name('backup_restore.restore');
     });
 
-    Route::prefix('excel')->group(function () {
-        Route::get('/', [ExcelController::class, 'index'])->name('excel.index');
-        Route::post('/import', [ExcelController::class, 'import'])->name('excel.import');
-        Route::get('/export', [ExcelController::class, 'export'])->name('excel.export');
+    Route::prefix('spreadsheet')->group(function () {
+        Route::get('/', [SpreadsheetController::class, 'index'])->name('spreadsheet.index');
+        Route::post('/import', [SpreadsheetController::class, 'import'])->name('spreadsheet.import');
+        Route::get('/export', [SpreadsheetController::class, 'export'])->name('spreadsheet.export');
     });
 
     Route::prefix('profile')->group(function () {

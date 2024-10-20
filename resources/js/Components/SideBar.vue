@@ -199,11 +199,11 @@ const page = usePage();
                 </span>
             </NavLink>
             <NavLink
-                :href="route('excel.index')"
-                :active="page.component === 'ExcelImport/Index'"
+                :href="route('spreadsheet.index')"
+                :active="page.component === 'Spreadsheet/Index'"
                 class="flex w-full items-center px-6 py-3 pt-3 text-white transition-colors duration-200"
                 :class="[
-                    page.component === 'ExcelImport/Index'
+                    page.component === 'Spreadsheet/Index'
                         ? 'bg-dark-secondary text-white'
                         : 'hover:bg-white hover:text-dark-navbar',
                 ]"
@@ -227,7 +227,7 @@ const page = usePage();
                 </svg>
 
                 <span class="mx-4 pt-1" :class="{ hidden: isCollapsed }">
-                    Excel Import
+                    Handle Spreadsheets
                 </span>
             </NavLink>
         </nav>
