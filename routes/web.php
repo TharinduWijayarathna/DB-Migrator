@@ -35,6 +35,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/', [BackupRestoreController::class, 'index'])->name('backup_restore.index');
         Route::post('/backup', [BackupRestoreController::class, 'backup'])->name('backup_restore.backup');
         Route::post('/restore', [BackupRestoreController::class, 'restore'])->name('backup_restore.restore');
+        Route::get('/tables', [BackupRestoreController::class, 'getDatabaseTableNames'])->name('backup_restore.tables');
     });
 
     Route::prefix('profile')->group(function () {

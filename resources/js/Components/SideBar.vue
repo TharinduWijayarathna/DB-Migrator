@@ -86,7 +86,7 @@ const page = usePage();
                 :class="[
                     page.component === 'Dashboard/Index'
                         ? 'bg-dark-secondary text-white'
-                        : 'hover:bg-white hover:text-dark-secondary',
+                        : 'hover:bg-white hover:text-dark-navbar',
                 ]"
             >
                 <svg
@@ -114,7 +114,7 @@ const page = usePage();
                 :class="[
                     page.component === 'DBConnection/Index'
                         ? 'bg-dark-secondary text-white'
-                        : 'hover:bg-white hover:text-dark-secondary',
+                        : 'hover:bg-white hover:text-dark-navbar',
                 ]"
             >
                 <svg
@@ -147,7 +147,7 @@ const page = usePage();
                 :class="[
                     page.component === 'Query/Index'
                         ? 'bg-dark-secondary text-white'
-                        : 'hover:bg-white hover:text-dark-secondary',
+                        : 'hover:bg-white hover:text-dark-navbar',
                 ]"
             >
                 <svg
@@ -176,7 +176,7 @@ const page = usePage();
                 :class="[
                     page.component === 'BackupAndRestore/Index'
                         ? 'bg-dark-secondary text-white'
-                        : 'hover:bg-white hover:text-dark-secondary',
+                        : 'hover:bg-white hover:text-dark-navbar',
                 ]"
             >
                 <svg

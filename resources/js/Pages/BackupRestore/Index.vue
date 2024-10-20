@@ -5,7 +5,8 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import axios from 'axios';
+import { onMounted, ref } from 'vue';
 
 interface BreadcrumbItem {
     name: string;
@@ -20,7 +21,7 @@ const breadcrumbItems: BreadcrumbItem[] = [
 const backupType = ref('full');
 const includeData = ref(true);
 const selectedTables = ref([]);
-const tables = ref(['users', 'posts', 'comments', 'categories']); // Example tables, replace with actual tables
+const tables = ref([]);
 const restoreFile = ref({} as File);
 const fileName = ref('');
 
@@ -46,6 +47,20 @@ const handleRestore = () => {
     // Implement restore logic here
     console.log('Restore initiated with file:', restoreFile.value);
 };
+
+const getDBTableNames = async () => {
+    try {
+        const response = await axios.get(route('backup_restore.tables'));
+        tables.value = response.data.tables;
+    } catch (error) {
+        console.error('Error fetching table names:', error);
+        return [];
+    }
+};
+
+onMounted(() => {
+    getDBTableNames();
+});
 </script>
 
 <template>
@@ -108,13 +123,28 @@ const handleRestore = () => {
                                             :key="table"
                                             class="flex items-center"
                                         >
-                                            <input
-                                                type="checkbox"
-                                                v-model="selectedTables"
-                                                :value="table"
-                                                class="mr-2"
+                                            <Checkbox
+                                                :checked="
+                                                    selectedTables.includes(
+                                                        table,
+                                                    )
+                                                "
+                                                @update:checked="
+                                                    selectedTables = $event
+                                                        ? [
+                                                              ...selectedTables,
+                                                              table,
+                                                          ]
+                                                        : selectedTables.filter(
+                                                              (t) =>
+                                                                  t !== table,
+                                                          )
+                                                "
                                             />
-                                            {{ table }}
+                                            <span
+                                                class="ms-2 text-sm text-white"
+                                                >{{ table }}</span
+                                            >
                                         </label>
                                     </div>
                                 </div>
