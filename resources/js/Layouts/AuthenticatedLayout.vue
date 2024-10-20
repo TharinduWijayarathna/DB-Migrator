@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
-import Sidebar from '@/Components/SideBar.vue'; // Assume you've saved the Sidebar component in the same directory
+import Sidebar from '@/Components/SideBar.vue';
 import { ref } from 'vue';
 
 const sidebarCollapsed = ref(false);
@@ -14,7 +14,7 @@ const toggleSidebar = () => {
 <template>
     <div class="flex h-screen bg-dark-background">
         <!-- Sidebar -->
-        <Sidebar :collapsed="sidebarCollapsed" @toggle="toggleSidebar" />
+        <Sidebar v-model:collapsed="sidebarCollapsed" />
 
         <!-- Main Content -->
         <div class="flex flex-1 flex-col overflow-hidden">
@@ -63,7 +63,9 @@ const toggleSidebar = () => {
             </header>
 
             <!-- Page Content -->
-            <main class="flex-1 overflow-y-auto overflow-x-hidden bg-dark-background">
+            <main
+                class="flex-1 overflow-y-auto overflow-x-hidden bg-dark-background"
+            >
                 <div class="container-fluid mx-auto">
                     <slot />
                 </div>
