@@ -171,10 +171,10 @@ const page = usePage();
             </NavLink>
             <NavLink
                 :href="route('backup_restore.index')"
-                :active="page.component === 'BackupAndRestore/Index'"
+                :active="page.component === 'BackupRestore/Index'"
                 class="flex w-full items-center px-6 py-3 pt-3 text-white transition-colors duration-200"
                 :class="[
-                    page.component === 'BackupAndRestore/Index'
+                    page.component === 'BackupRestore/Index'
                         ? 'bg-dark-secondary text-white'
                         : 'hover:bg-white hover:text-dark-navbar',
                 ]"
