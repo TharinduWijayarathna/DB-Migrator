@@ -38,22 +38,32 @@ const handleBackup = () => {
     try {
         if (backupType.value === 'full') {
             if (includeData.value) {
-                // Full backup with data logic
-                console.log('Full backup initiated with data');
+                const response = axios.get(route('backup_restore.full_backup'));
+                console.log(response);
             } else {
-                // Full backup without data logic
-                console.log('Full backup initiated without data');
+                const response = axios.get(
+                    route('backup_restore.full_backup.no_data'),
+                );
+                console.log(response);
             }
         } else {
             if (selectedTables.value.length > 0) {
                 if (includeData.value) {
-                    // Selected tables backup with data logic
-                    console.log('Selected tables backup initiated with data');
-                } else {
-                    // Selected tables backup without data logic
-                    console.log(
-                        'Selected tables backup initiated without data',
+                    const response = axios.post(
+                        route('backup_restore.backup.selective_backup'),
+                        {
+                            tables: selectedTables.value,
+                        },
                     );
+                    console.log(response);
+                } else {
+                    const response = axios.post(
+                        route('backup_restore.backup.selective_backup_no_data'),
+                        {
+                            tables: selectedTables.value,
+                        },
+                    );
+                    console.log(response);
                 }
             } else {
                 console.log('Please select tables to backup');

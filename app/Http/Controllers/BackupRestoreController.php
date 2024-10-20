@@ -98,7 +98,7 @@ class BackupRestoreController extends Controller
         ]);
     }
 
-    public function full_backup_without_data()
+    public function full_backup_no_data()
     {
         $file = 'backup-' . date('Y-m-d-H-i-s') . '.sql';
         $connection = DBConnection::where('is_active', 1)->first();
@@ -138,7 +138,7 @@ class BackupRestoreController extends Controller
         ]);
     }
 
-    public function backup_provided_tables(Request $request)
+    public function selective_backup(Request $request)
     {
         $request->validate([
             'tables' => 'required|array',
@@ -185,7 +185,7 @@ class BackupRestoreController extends Controller
         ]);
     }
 
-    public function backup_provided_tables_without_data(Request $request)
+    public function selective_backup_no_data(Request $request)
     {
         $request->validate([
             'tables' => 'required|array',
