@@ -35,10 +35,11 @@ Route::middleware('auth')->group(function () {
         Route::get('/', [BackupRestoreController::class, 'index'])->name('backup_restore.index');
         Route::post('/restore', [BackupRestoreController::class, 'restore'])->name('backup_restore.restore');
         Route::get('/tables', [BackupRestoreController::class, 'getDatabaseTableNames'])->name('backup_restore.tables');
-        Route::get('/full_backup', [BackupRestoreController::class, 'full_backup'])->name('backup_restore.full_backup');
-        Route::get('/full_backup/no_data', [BackupRestoreController::class, 'full_backup_no_data'])->name('backup_restore.full_backup_no_data');
-        Route::get('/selective_backup', [BackupRestoreController::class, 'selective_backup'])->name('backup_restore.selective_backup');
-        Route::get('/selective_backup/no_data', [BackupRestoreController::class, 'selective_backup_no_data'])->name('backup_restore.selective_backup_no_data');
+        Route::get('/full_backup', [BackupRestoreController::class, 'fullBackup'])->name('backup_restore.full_backup');
+        Route::get('/full_backup/no_data', [BackupRestoreController::class, 'fullBackupNoData'])->name('backup_restore.full_backup_no_data');
+        Route::get('/selective_backup', [BackupRestoreController::class, 'selectiveBackup'])->name('backup_restore.selective_backup');
+        Route::get('/selective_backup/no_data', [BackupRestoreController::class, 'selectiveBackupNoData'])->name('backup_restore.selective_backup_no_data');
+        Route::delete('/delete_backup', [BackupRestoreController::class, 'deleteBackup'])->name('backup_restore.delete_backup');
     });
 
     Route::prefix('profile')->group(function () {

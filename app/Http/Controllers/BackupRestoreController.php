@@ -57,7 +57,7 @@ class BackupRestoreController extends Controller
         ]);
     }
 
-    public function full_backup()
+    public function fullBackup()
     {
         $file = 'backup-' . date('Y-m-d-H-i-s') . '.sql';
         $connection = DBConnection::where('is_active', 1)->first();
@@ -98,7 +98,7 @@ class BackupRestoreController extends Controller
         ]);
     }
 
-    public function full_backup_no_data()
+    public function fullBackupNoData()
     {
         $file = 'backup-' . date('Y-m-d-H-i-s') . '.sql';
         $connection = DBConnection::where('is_active', 1)->first();
@@ -138,7 +138,7 @@ class BackupRestoreController extends Controller
         ]);
     }
 
-    public function selective_backup(Request $request)
+    public function selectiveBackup(Request $request)
     {
         $request->validate([
             'tables' => 'required|array',
@@ -185,7 +185,7 @@ class BackupRestoreController extends Controller
         ]);
     }
 
-    public function selective_backup_no_data(Request $request)
+    public function selectiveBackupNoData(Request $request)
     {
         $request->validate([
             'tables' => 'required|array',
@@ -229,6 +229,23 @@ class BackupRestoreController extends Controller
         return response()->json([
             'success' => true,
             'file' => $file
+        ]);
+    }
+
+    public function deleteBackup(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|string'
+        ]);
+
+        $file = $request->input('file');
+
+        if (file_exists(storage_path('app/public/' . $file))) {
+            unlink(storage_path('app/public/' . $file));
+        }
+
+        return response()->json([
+            'success' => true
         ]);
     }
 }

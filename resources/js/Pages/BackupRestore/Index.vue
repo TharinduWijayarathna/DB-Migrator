@@ -14,7 +14,6 @@ interface BreadcrumbItem {
 }
 
 const breadcrumbItems: BreadcrumbItem[] = [
-    { name: 'Dashboard', href: route('dashboard') },
     { name: 'Backup & Restore', href: route('backup_restore.index') },
 ];
 
@@ -44,7 +43,7 @@ const handleBackup = () => {
             axios
                 .get(url)
                 .then((response) => {
-                    console.log(response);
+                    downloadBackup(response.data.file);
                 })
                 .catch((error) => {
                     console.error('Error:', error);
@@ -62,7 +61,7 @@ const handleBackup = () => {
                         },
                     })
                     .then((response) => {
-                        console.log(response);
+                        downloadBackup(response.data.file);
                     })
                     .catch((error) => {
                         console.error('Error:', error);
@@ -74,6 +73,34 @@ const handleBackup = () => {
     } catch (error) {
         console.error('Error backing up database:', error);
     }
+};
+
+const downloadBackup = (file: string) => {
+    fetch('/storage/' + file)
+        .then((response) => response.blob())
+        .then((blob) => {
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = file.split('/').pop() || 'backup.sql';
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+
+            // Delete the file after download
+            axios
+                .delete(route('backup_restore.delete_backup'), {
+                    params: { file: file },
+                })
+                .catch((error) => {
+                    console.error('Error deleting backup file:', error);
+                });
+        })
+        .catch((error) => {
+            console.error('Error downloading file:', error);
+        });
 };
 
 const handleRestore = () => {
