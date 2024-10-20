@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\DBConnection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class BackupRestoreController extends Controller
@@ -247,5 +248,53 @@ class BackupRestoreController extends Controller
         return response()->json([
             'success' => true
         ]);
+    }
+
+    public function restore(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file|max:50000' // 50MB max file size
+        ]);
+
+        $connection = DBConnection::where('is_active', 1)->first();
+
+        if (!$connection) {
+            return response()->json([
+                'success' => false,
+                'error' => 'No active database connection found.'
+            ], 400);
+        }
+
+        $uploadedFile = $request->file('file');
+        $filePath = $uploadedFile->path();
+
+        config([
+            "database.connections.mysql_static" => [
+                'driver' => 'mysql',
+                'host' => $connection->host,
+                'port' => $connection->port,
+                'database' => $connection->database,
+                'username' => $connection->username,
+                'password' => $connection->password,
+            ]
+        ]);
+
+        try {
+            DB::connection('mysql_static')->unprepared(file_get_contents($filePath));
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Database restored successfully.'
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Database restore failed: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'error' => 'Failed to restore database. Please check the logs for more information.'
+            ], 500);
+        } finally {
+            // Clean up the temporary uploaded file
+            @unlink($filePath);
+        }
     }
 }

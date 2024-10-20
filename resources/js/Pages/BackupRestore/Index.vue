@@ -21,16 +21,32 @@ const backupType = ref('full');
 const includeData = ref(true);
 const selectedTables = ref([]);
 const tables = ref([]);
-const restoreFile = ref({} as File);
+const restoreFileInput = ref<HTMLInputElement | null>(null);
 const fileName = ref('');
+const restoreFile = ref<File | null>(null);
 
 const handleFileChange = (event: Event) => {
     const target = event.target as HTMLInputElement;
-    if (target.files && target.files[0]) {
-        restoreFile.value = target.files[0];
+    if (target.files && target.files.length > 0) {
+        const file = target.files[0];
+        if (file.name.toLowerCase().endsWith('.sql')) {
+            restoreFile.value = file;
+            fileName.value = file.name;
+        } else {
+            console.error('Please select a valid .sql file');
+            resetFileInput();
+        }
+    } else {
+        resetFileInput();
     }
+};
 
-    fileName.value = restoreFile.value.name;
+const resetFileInput = () => {
+    if (restoreFileInput.value) {
+        restoreFileInput.value.value = '';
+    }
+    restoreFile.value = null;
+    fileName.value = '';
 };
 
 const handleBackup = () => {
@@ -104,8 +120,36 @@ const downloadBackup = (file: string) => {
 };
 
 const handleRestore = () => {
-    // Implement restore logic here
-    console.log('Restore initiated with file:', restoreFile.value);
+    try {
+        if (!restoreFile.value) {
+            console.error('No file selected or invalid file');
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('file', restoreFile.value);
+
+        axios
+            .post(route('backup_restore.restore'), formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            })
+            .then((response) => {
+                console.log('Database restored successfully', response.data);
+                resetFileInput();
+                // You might want to show a success message to the user here
+            })
+            .catch((error) => {
+                console.error(
+                    'Error restoring database:',
+                    error.response?.data || error,
+                );
+                // You might want to show an error message to the user here
+            });
+    } catch (error) {
+        console.error('Error in handleRestore:', error);
+    }
 };
 
 const getDBTableNames = async () => {
@@ -231,22 +275,21 @@ onMounted(() => {
                                     >
                                     <input
                                         type="file"
-                                        ref="restoreFile"
+                                        ref="restoreFileInput"
                                         class="hidden"
                                         @change="handleFileChange"
+                                        accept=".sql"
                                     />
                                     <label class="flex items-center">
                                         <SecondaryButton
-                                            @click="$refs.restoreFile.click()"
+                                            @click="
+                                                $refs.restoreFileInput.click()
+                                            "
                                         >
                                             Select File
                                         </SecondaryButton>
                                         <span class="ml-2">
-                                            {{
-                                                fileName
-                                                    ? fileName
-                                                    : 'No file selected'
-                                            }}
+                                            {{ fileName || 'No file selected' }}
                                         </span>
                                     </label>
                                 </div>

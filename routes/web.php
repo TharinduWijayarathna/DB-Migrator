@@ -40,6 +40,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/selective_backup', [BackupRestoreController::class, 'selectiveBackup'])->name('backup_restore.selective_backup');
         Route::get('/selective_backup/no_data', [BackupRestoreController::class, 'selectiveBackupNoData'])->name('backup_restore.selective_backup_no_data');
         Route::delete('/delete_backup', [BackupRestoreController::class, 'deleteBackup'])->name('backup_restore.delete_backup');
+        Route::post('/restore', [BackupRestoreController::class, 'restore'])->name('backup_restore.restore');
     });
 
     Route::prefix('profile')->group(function () {
