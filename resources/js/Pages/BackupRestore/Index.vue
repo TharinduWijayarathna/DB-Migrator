@@ -37,34 +37,36 @@ const handleFileChange = (event: Event) => {
 const handleBackup = () => {
     try {
         if (backupType.value === 'full') {
-            if (includeData.value) {
-                const response = axios.get(route('backup_restore.full_backup'));
-                console.log(response);
-            } else {
-                const response = axios.get(
-                    route('backup_restore.full_backup.no_data'),
-                );
-                console.log(response);
-            }
+            const url = includeData.value
+                ? route('backup_restore.full_backup')
+                : route('backup_restore.full_backup_no_data');
+
+            axios
+                .get(url)
+                .then((response) => {
+                    console.log(response);
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
         } else {
             if (selectedTables.value.length > 0) {
-                if (includeData.value) {
-                    const response = axios.post(
-                        route('backup_restore.backup.selective_backup'),
-                        {
+                const url = includeData.value
+                    ? route('backup_restore.selective_backup')
+                    : route('backup_restore.selective_backup_no_data');
+
+                axios
+                    .get(url, {
+                        params: {
                             tables: selectedTables.value,
                         },
-                    );
-                    console.log(response);
-                } else {
-                    const response = axios.post(
-                        route('backup_restore.backup.selective_backup_no_data'),
-                        {
-                            tables: selectedTables.value,
-                        },
-                    );
-                    console.log(response);
-                }
+                    })
+                    .then((response) => {
+                        console.log(response);
+                    })
+                    .catch((error) => {
+                        console.error('Error:', error);
+                    });
             } else {
                 console.log('Please select tables to backup');
             }
