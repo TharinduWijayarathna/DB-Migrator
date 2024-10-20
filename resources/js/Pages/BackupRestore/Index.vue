@@ -35,12 +35,33 @@ const handleFileChange = (event: Event) => {
 };
 
 const handleBackup = () => {
-    // Implement backup logic here
-    console.log('Backup initiated:', {
-        backupType: backupType.value,
-        includeData: includeData.value,
-        selectedTables: selectedTables.value,
-    });
+    try {
+        if (backupType.value === 'full') {
+            if (includeData.value) {
+                // Full backup with data logic
+                console.log('Full backup initiated with data');
+            } else {
+                // Full backup without data logic
+                console.log('Full backup initiated without data');
+            }
+        } else {
+            if (selectedTables.value.length > 0) {
+                if (includeData.value) {
+                    // Selected tables backup with data logic
+                    console.log('Selected tables backup initiated with data');
+                } else {
+                    // Selected tables backup without data logic
+                    console.log(
+                        'Selected tables backup initiated without data',
+                    );
+                }
+            } else {
+                console.log('Please select tables to backup');
+            }
+        }
+    } catch (error) {
+        console.error('Error backing up database:', error);
+    }
 };
 
 const handleRestore = () => {
