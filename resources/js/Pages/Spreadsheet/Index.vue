@@ -12,6 +12,8 @@ interface BreadcrumbItem {
 }
 
 const fileName = ref<string | null>(null);
+const selectedTable = ref<string>('');
+const importedData = ref<any[]>([]);
 
 const handleFileChange = (event: Event) => {
     const target = event.target as HTMLInputElement;
@@ -25,15 +27,37 @@ const breadcrumbItems: BreadcrumbItem[] = [
     { name: 'Handle Spreadsheets', href: route('spreadsheet.index') },
 ];
 
-// Dummy data for table display
-const dummyData = [
-    { id: 1, name: 'John Doe', email: 'john@example.com' },
-    { id: 2, name: 'Jane Smith', email: 'jane@example.com' },
-    { id: 3, name: 'Bob Johnson', email: 'bob@example.com' },
-];
-
 // Available tables for export (dummy data)
 const availableTables = ['users', 'products', 'orders'];
+
+// Dummy function to simulate importing data
+const importSpreadsheet = () => {
+    if (!selectedTable.value || !fileName.value) {
+        alert('Please select a table and a file');
+        return;
+    }
+    // Simulating an API call or file processing
+    setTimeout(() => {
+        importedData.value = [
+            { id: 1, name: 'John Doe', email: 'john@example.com' },
+            { id: 2, name: 'Jane Smith', email: 'jane@example.com' },
+            { id: 3, name: 'Bob Johnson', email: 'bob@example.com' },
+        ];
+        alert(`Data imported successfully for table: ${selectedTable.value}`);
+    }, 1000);
+};
+
+// Dummy function to simulate exporting data
+const exportSpreadsheet = () => {
+    if (!selectedTable.value) {
+        alert('Please select a table to export');
+        return;
+    }
+    // Simulating an API call or file generation
+    setTimeout(() => {
+        alert(`Data exported successfully for table: ${selectedTable.value}`);
+    }, 1000);
+};
 </script>
 
 <template>
@@ -54,7 +78,10 @@ const availableTables = ['users', 'products', 'orders'];
                 <h3 class="mb-4 text-xl font-semibold text-white">
                     Import Spreadsheet
                 </h3>
-                <select class="mb-4 w-1/4 rounded bg-gray-600 p-2 text-white">
+                <select
+                    v-model="selectedTable"
+                    class="mb-4 w-1/4 rounded bg-gray-600 p-2 text-white"
+                >
                     <option value="">Select a table</option>
                     <option
                         v-for="table in availableTables"
@@ -70,7 +97,7 @@ const availableTables = ['users', 'products', 'orders'];
                     ref="restoreFileInput"
                     class="hidden"
                     @change="handleFileChange"
-                    accept=".sql"
+                    accept=".csv,.xlsx"
                 />
                 <label class="mb-5 flex items-center">
                     <SecondaryButton @click="$refs.restoreFileInput.click()">
@@ -80,7 +107,9 @@ const availableTables = ['users', 'products', 'orders'];
                         {{ fileName || 'No file selected' }}
                     </span>
                 </label>
-                <PrimaryButton>Import Spreadsheet</PrimaryButton>
+                <PrimaryButton @click="importSpreadsheet"
+                    >Import Spreadsheet</PrimaryButton
+                >
             </div>
 
             <!-- Export Section -->
@@ -88,7 +117,10 @@ const availableTables = ['users', 'products', 'orders'];
                 <h3 class="mb-4 text-xl font-semibold text-white">
                     Export Spreadsheet
                 </h3>
-                <select class="mb-4 w-1/4 rounded bg-gray-600 p-2 text-white">
+                <select
+                    v-model="selectedTable"
+                    class="mb-4 w-1/4 rounded bg-gray-600 p-2 text-white"
+                >
                     <option value="">Select a table</option>
                     <option
                         v-for="table in availableTables"
@@ -99,13 +131,18 @@ const availableTables = ['users', 'products', 'orders'];
                     </option>
                 </select>
                 <br />
-                <PrimaryButton>Export Spreadsheet</PrimaryButton>
+                <PrimaryButton @click="exportSpreadsheet"
+                    >Export Spreadsheet</PrimaryButton
+                >
             </div>
 
-            <!-- Dummy Data Table -->
-            <div class="rounded-lg bg-gray-800 p-4">
+            <!-- Imported Data Table -->
+            <div
+                v-if="importedData.length > 0"
+                class="rounded-lg bg-gray-800 p-4"
+            >
                 <h3 class="mb-4 text-xl font-semibold text-white">
-                    Imported Data (Example)
+                    Imported Data
                 </h3>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-sm text-gray-300">
@@ -114,7 +151,7 @@ const availableTables = ['users', 'products', 'orders'];
                         >
                             <tr>
                                 <th
-                                    v-for="(value, key) in dummyData[0]"
+                                    v-for="(value, key) in importedData[0]"
                                     :key="key"
                                     class="px-6 py-3"
                                 >
@@ -124,7 +161,7 @@ const availableTables = ['users', 'products', 'orders'];
                         </thead>
                         <tbody>
                             <tr
-                                v-for="row in dummyData"
+                                v-for="row in importedData"
                                 :key="row.id"
                                 class="border-b border-gray-700 bg-gray-800"
                             >
