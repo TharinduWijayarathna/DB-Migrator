@@ -18,16 +18,33 @@ const sqlQuery = ref('');
 const queryOutput = ref('');
 const syntaxError = ref('');
 const errorMessage = ref('');
+const affectedRows = ref(0);
+const queryType = ref('');
 
 const runQuery = async () => {
-    errorMessage.value = ''; // Clear any previous errors
-    const response = await axios.post(route('query.run'), {
-        query: sqlQuery.value,
-    });
-    if (response.data.success) {
-        queryOutput.value = JSON.stringify(response.data.results, null, 2);
-    } else {
-        errorMessage.value = response.data.error;
+    errorMessage.value = '';
+    queryOutput.value = '';
+    affectedRows.value = 0;
+    queryType.value = '';
+
+    try {
+        const response = await axios.post(route('query.run'), {
+            query: sqlQuery.value,
+        });
+        if (response.data.success) {
+            queryType.value = response.data.type;
+            affectedRows.value = response.data.affectedRows || 0;
+
+            if (response.data.type === 'select' && response.data.results) {
+                queryOutput.value = response.data.results;
+            } else {
+                queryOutput.value = JSON.stringify(response.data, null, 2);
+            }
+        } else {
+            errorMessage.value = response.data.error;
+        }
+    } catch (error) {
+        errorMessage.value = 'An unexpected error occurred';
     }
 };
 
@@ -158,17 +175,62 @@ watch(sqlQuery, (newQuery) => {
                 Run Query
             </button>
 
-            <div v-if="queryOutput" class="mt-6">
+            <div v-if="queryOutput || errorMessage" class="mt-6">
                 <h3 class="mb-2 text-lg font-medium text-white">
                     Query Output:
                 </h3>
-                <div v-if="errorMessage" class="error-message">
+                <div v-if="errorMessage" class="mb-2 text-red-400">
                     {{ errorMessage }}
                 </div>
-                <pre
-                    class="overflow-x-auto rounded-md bg-gray-700 p-4 text-gray-200"
-                    >{{ queryOutput }}</pre
-                >
+                <div v-else>
+                    <p class="mb-2 text-green-400">
+                        Query type: {{ queryType }}
+                    </p>
+                    <p class="mb-2 text-green-400">
+                        Affected rows: {{ affectedRows }}
+                    </p>
+                    <div
+                        v-if="
+                            queryType === 'select' &&
+                            Array.isArray(queryOutput) &&
+                            queryOutput.length > 0
+                        "
+                        class="overflow-x-auto"
+                    >
+                        <table class="min-w-full divide-y divide-gray-700">
+                            <thead>
+                                <tr>
+                                    <th
+                                        v-for="(value, key) in queryOutput[0]"
+                                        :key="key"
+                                        class="bg-gray-700 px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-300"
+                                    >
+                                        {{ key }}
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-700 bg-gray-800">
+                                <tr
+                                    v-for="(row, index) in queryOutput"
+                                    :key="index"
+                                >
+                                    <td
+                                        v-for="(value, key) in row"
+                                        :key="key"
+                                        class="whitespace-nowrap px-6 py-4 text-sm text-gray-300"
+                                    >
+                                        {{ value }}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <pre
+                        v-else
+                        class="overflow-x-auto rounded-md bg-gray-700 p-4 text-gray-200"
+                        >{{ JSON.stringify(queryOutput, null, 2) }}</pre
+                    >
+                </div>
             </div>
         </div>
     </AuthenticatedLayout>

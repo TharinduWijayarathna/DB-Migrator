@@ -30,7 +30,6 @@ class QueryController extends Controller
             ], 400);
         }
 
-        // Configure the dynamic connection
         config([
             "database.connections.mysql_static" => [
                 'driver' => 'mysql',
@@ -43,13 +42,35 @@ class QueryController extends Controller
         ]);
 
         try {
-            // Use the dynamic connection to run the query
-            $results = DB::connection('mysql_static')->select($request->input('query'));
+            $query = trim($request->input('query'));
+            $queryType = strtoupper(strtok($query, ' '));
 
-            return response()->json([
-                'success' => true,
-                'results' => $results
-            ]);
+            switch ($queryType) {
+                case 'SELECT':
+                    $results = DB::connection('mysql_static')->select($query);
+                    return response()->json([
+                        'success' => true,
+                        'type' => 'select',
+                        'results' => $results,
+                        'affectedRows' => count($results)
+                    ]);
+                case 'INSERT':
+                case 'UPDATE':
+                case 'DELETE':
+                    $affectedRows = DB::connection('mysql_static')->affectingStatement($query);
+                    return response()->json([
+                        'success' => true,
+                        'type' => strtolower($queryType),
+                        'affectedRows' => $affectedRows
+                    ]);
+                default:
+                    $result = DB::connection('mysql_static')->statement($query);
+                    return response()->json([
+                        'success' => true,
+                        'type' => 'other',
+                        'result' => $result
+                    ]);
+            }
         } catch (QueryException $e) {
             return response()->json([
                 'success' => false,
