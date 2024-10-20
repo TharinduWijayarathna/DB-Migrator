@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\BackupRestoreController;
 use App\Http\Controllers\BaseController;
 use App\Http\Controllers\DBConnectionController;
 use App\Http\Controllers\ProfileController;
@@ -27,6 +28,13 @@ Route::middleware('auth')->group(function () {
     Route::prefix('query')->group(function () {
         Route::get('/', [QueryController::class, 'index'])->name('query.index');
         Route::post('/', [QueryController::class, 'run'])->name('query.run');
+    });
+
+    //backup and restore
+    Route::prefix('backup_restore')->group(function () {
+        Route::get('/', [BackupRestoreController::class, 'index'])->name('backup_restore.index');
+        Route::post('/backup', [BackupRestoreController::class, 'backup'])->name('backup_restore.backup');
+        Route::post('/restore', [BackupRestoreController::class, 'restore'])->name('backup_restore.restore');
     });
 
     Route::prefix('profile')->group(function () {

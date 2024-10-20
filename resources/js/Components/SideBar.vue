@@ -169,6 +169,35 @@ const page = usePage();
                     Run SQL Query
                 </span>
             </NavLink>
+            <NavLink
+                :href="route('backup_restore.index')"
+                :active="page.component === 'BackupAndRestore/Index'"
+                class="flex w-full items-center px-6 py-3 pt-3 text-white transition-colors duration-200"
+                :class="[
+                    page.component === 'BackupAndRestore/Index'
+                        ? 'bg-dark-secondary text-white'
+                        : 'hover:bg-white hover:text-dark-secondary',
+                ]"
+            >
+                <svg
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    stroke-width="2"
+                    stroke="currentColor"
+                    fill="none"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                >
+                    <path stroke="none" d="M0 0h24v24H0z" />
+                    <polyline points="12 8 12 12 14 14" />
+                    <path d="M3.05 11a9 9 0 1 1 .5 4m-.5 5v-5h5" />
+                </svg>
+
+                <span class="mx-4 pt-1" :class="{ hidden: isCollapsed }">
+                    Backup and Restore
+                </span>
+            </NavLink>
         </nav>
     </aside>
 </template>
