@@ -13,6 +13,11 @@ interface BreadcrumbItem {
     href: string;
 }
 
+interface Notification {
+    type: 'success' | 'error';
+    message: string;
+}
+
 const breadcrumbItems: BreadcrumbItem[] = [
     { name: 'Backup & Restore', href: route('backup_restore.index') },
 ];
@@ -24,6 +29,18 @@ const tables = ref([]);
 const restoreFileInput = ref<HTMLInputElement | null>(null);
 const fileName = ref('');
 const restoreFile = ref<File | null>(null);
+const notification = ref<Notification | null>(null);
+
+const showNotification = (type: 'success' | 'error', message: string) => {
+    notification.value = { type, message };
+    setTimeout(() => {
+        notification.value = null;
+    }, 5000); // Auto-dismiss after 5 seconds
+};
+
+const dismissNotification = () => {
+    notification.value = null;
+};
 
 const handleFileChange = (event: Event) => {
     const target = event.target as HTMLInputElement;
@@ -33,7 +50,7 @@ const handleFileChange = (event: Event) => {
             restoreFile.value = file;
             fileName.value = file.name;
         } else {
-            console.error('Please select a valid .sql file');
+            showNotification('error', 'Please select a valid .sql file');
             resetFileInput();
         }
     } else {
@@ -60,9 +77,11 @@ const handleBackup = () => {
                 .get(url)
                 .then((response) => {
                     downloadBackup(response.data.file);
+                    showNotification('success', 'Backup created successfully');
                 })
                 .catch((error) => {
                     console.error('Error:', error);
+                    showNotification('error', 'Failed to create backup');
                 });
         } else {
             if (selectedTables.value.length > 0) {
@@ -78,16 +97,22 @@ const handleBackup = () => {
                     })
                     .then((response) => {
                         downloadBackup(response.data.file);
+                        showNotification(
+                            'success',
+                            'Backup created successfully',
+                        );
                     })
                     .catch((error) => {
                         console.error('Error:', error);
+                        showNotification('error', 'Failed to create backup');
                     });
             } else {
-                console.log('Please select tables to backup');
+                showNotification('error', 'Please select tables to backup');
             }
         }
     } catch (error) {
         console.error('Error backing up database:', error);
+        showNotification('error', 'An unexpected error occurred during backup');
     }
 };
 
@@ -112,17 +137,19 @@ const downloadBackup = (file: string) => {
                 })
                 .catch((error) => {
                     console.error('Error deleting backup file:', error);
+                    showNotification('error', 'Error deleting backup file');
                 });
         })
         .catch((error) => {
             console.error('Error downloading file:', error);
+            showNotification('error', 'Error downloading backup file');
         });
 };
 
 const handleRestore = () => {
     try {
         if (!restoreFile.value) {
-            console.error('No file selected or invalid file');
+            showNotification('error', 'No file selected or invalid file');
             return;
         }
 
@@ -138,17 +165,21 @@ const handleRestore = () => {
             .then((response) => {
                 console.log('Database restored successfully', response.data);
                 resetFileInput();
-                // You might want to show a success message to the user here
+                showNotification('success', 'Database restored successfully');
             })
             .catch((error) => {
                 console.error(
                     'Error restoring database:',
                     error.response?.data || error,
                 );
-                // You might want to show an error message to the user here
+                showNotification('error', 'Failed to restore database');
             });
     } catch (error) {
         console.error('Error in handleRestore:', error);
+        showNotification(
+            'error',
+            'An unexpected error occurred during restore',
+        );
     }
 };
 
@@ -158,6 +189,7 @@ const getDBTableNames = async () => {
         tables.value = response.data.tables;
     } catch (error) {
         console.error('Error fetching table names:', error);
+        showNotification('error', 'Failed to fetch table names');
         return [];
     }
 };
@@ -178,6 +210,30 @@ onMounted(() => {
             <h2 class="mb-5 text-xl font-medium text-white">
                 Backup & Restore
             </h2>
+
+            <!-- Custom Notification Component -->
+            <div
+                v-if="notification"
+                :class="[
+                    'relative mb-4 rounded-md p-4 shadow-md',
+                    notification.type === 'success'
+                        ? 'bg-green-600'
+                        : 'bg-red-600',
+                ]"
+            >
+                <button
+                    @click="dismissNotification"
+                    class="absolute right-2 top-2 text-white hover:text-gray-200"
+                >
+                    &#x2715;
+                    <!-- X mark -->
+                </button>
+                <p class="font-semibold text-white">
+                    {{ notification.type === 'success' ? 'Success' : 'Error' }}
+                </p>
+                <p class="mt-1 text-white">{{ notification.message }}</p>
+            </div>
+
             <div class="grid grid-cols-2 space-x-8">
                 <div
                     class="overflow-hidden bg-gray-800 shadow-sm sm:rounded-lg"
