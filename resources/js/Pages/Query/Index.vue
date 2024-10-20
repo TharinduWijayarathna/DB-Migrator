@@ -11,7 +11,7 @@ interface BreadcrumbItem {
 }
 
 const breadcrumbItems: BreadcrumbItem[] = [
-    { name: 'Run SQL Query', href: route('query.index') },
+    { name: 'SQL Query', href: route('query.index') },
 ];
 
 const sqlQuery = ref('');

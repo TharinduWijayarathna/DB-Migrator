@@ -166,7 +166,7 @@ const page = usePage();
                 </svg>
 
                 <span class="mx-4 pt-1" :class="{ hidden: isCollapsed }">
-                    Run SQL Query
+                    SQL Query
                 </span>
             </NavLink>
             <NavLink
@@ -196,6 +196,38 @@ const page = usePage();
 
                 <span class="mx-4 pt-1" :class="{ hidden: isCollapsed }">
                     Backup & Restore
+                </span>
+            </NavLink>
+            <NavLink
+                :href="route('excel.index')"
+                :active="page.component === 'ExcelImport/Index'"
+                class="flex w-full items-center px-6 py-3 pt-3 text-white transition-colors duration-200"
+                :class="[
+                    page.component === 'ExcelImport/Index'
+                        ? 'bg-dark-secondary text-white'
+                        : 'hover:bg-white hover:text-dark-navbar',
+                ]"
+            >
+                <svg
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    stroke-width="2"
+                    stroke="currentColor"
+                    fill="none"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                    />
+                </svg>
+
+                <span class="mx-4 pt-1" :class="{ hidden: isCollapsed }">
+                    Excel Import
                 </span>
             </NavLink>
         </nav>

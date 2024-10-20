@@ -3,6 +3,7 @@
 use App\Http\Controllers\BackupRestoreController;
 use App\Http\Controllers\BaseController;
 use App\Http\Controllers\DBConnectionController;
+use App\Http\Controllers\ExcelController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\QueryController;
 use Illuminate\Foundation\Application;
@@ -30,7 +31,6 @@ Route::middleware('auth')->group(function () {
         Route::post('/', [QueryController::class, 'run'])->name('query.run');
     });
 
-    //backup and restore
     Route::prefix('backup_restore')->group(function () {
         Route::get('/', [BackupRestoreController::class, 'index'])->name('backup_restore.index');
         Route::post('/restore', [BackupRestoreController::class, 'restore'])->name('backup_restore.restore');
@@ -41,6 +41,12 @@ Route::middleware('auth')->group(function () {
         Route::get('/selective_backup/no_data', [BackupRestoreController::class, 'selectiveBackupNoData'])->name('backup_restore.selective_backup_no_data');
         Route::delete('/delete_backup', [BackupRestoreController::class, 'deleteBackup'])->name('backup_restore.delete_backup');
         Route::post('/restore', [BackupRestoreController::class, 'restore'])->name('backup_restore.restore');
+    });
+
+    Route::prefix('excel')->group(function () {
+        Route::get('/', [ExcelController::class, 'index'])->name('excel.index');
+        Route::post('/import', [ExcelController::class, 'import'])->name('excel.import');
+        Route::get('/export', [ExcelController::class, 'export'])->name('excel.export');
     });
 
     Route::prefix('profile')->group(function () {
