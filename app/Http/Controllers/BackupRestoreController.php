@@ -87,7 +87,7 @@ class BackupRestoreController extends Controller
             $connection->password,
             $connection->host,
             $connection->database,
-            storage_path('app/' . $file)
+            storage_path('app/public/' . $file)
         );
 
         exec($command);
@@ -127,7 +127,7 @@ class BackupRestoreController extends Controller
             $connection->password,
             $connection->host,
             $connection->database,
-            storage_path('app/' . $file)
+            storage_path('app/public/' . $file)
         );
 
         exec($command);
@@ -174,7 +174,7 @@ class BackupRestoreController extends Controller
             $connection->host,
             $connection->database,
             $tables,
-            storage_path('app/' . $file)
+            storage_path('app/public/' . $file)
         );
 
         exec($command);
@@ -221,7 +221,7 @@ class BackupRestoreController extends Controller
             $connection->host,
             $connection->database,
             $tables,
-            storage_path('app/' . $file)
+            storage_path('app/public/' . $file)
         );
 
         exec($command);
