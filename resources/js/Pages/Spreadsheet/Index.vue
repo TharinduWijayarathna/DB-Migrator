@@ -4,7 +4,8 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import axios from 'axios';
+import { ref, reactive, onMounted } from 'vue';
 
 interface BreadcrumbItem {
     name: string;
@@ -12,14 +13,35 @@ interface BreadcrumbItem {
 }
 
 const fileName = ref<string | null>(null);
-const selectedTable = ref<string>('');
+const selectedExportTable = ref<string>('');
+const selectedImportTable = ref<string>('');
 const importedData = ref<any[]>([]);
+const selectedFile = ref<File | null>(null); // To store the uploaded file
+
+const notification = reactive({
+    type: '',
+    message: '',
+    visible: false,
+});
+
+const showNotification = (type: string, message: string) => {
+    notification.type = type;
+    notification.message = message;
+    notification.visible = true;
+    setTimeout(() => {
+        notification.visible = false;
+    }, 3000); // Hide after 3 seconds
+};
+
+const dismissNotification = () => {
+    notification.visible = false;
+};
 
 const handleFileChange = (event: Event) => {
     const target = event.target as HTMLInputElement;
     if (target.files && target.files.length > 0) {
-        const file = target.files[0];
-        fileName.value = file.name;
+        selectedFile.value = target.files[0]; // Save the file
+        fileName.value = selectedFile.value.name; // Save the file name
     }
 };
 
@@ -27,37 +49,73 @@ const breadcrumbItems: BreadcrumbItem[] = [
     { name: 'Handle Spreadsheets', href: route('spreadsheet.index') },
 ];
 
-// Available tables for export (dummy data)
-const availableTables = ['users', 'products', 'orders'];
+const availableTables = ref<string[]>([]);
 
-// Dummy function to simulate importing data
 const importSpreadsheet = () => {
-    if (!selectedTable.value || !fileName.value) {
-        alert('Please select a table and a file');
+    if (!selectedImportTable.value || !selectedFile.value) {
+        showNotification('error', 'Please select a table and a file');
         return;
     }
-    // Simulating an API call or file processing
-    setTimeout(() => {
-        importedData.value = [
-            { id: 1, name: 'John Doe', email: 'john@example.com' },
-            { id: 2, name: 'Jane Smith', email: 'jane@example.com' },
-            { id: 3, name: 'Bob Johnson', email: 'bob@example.com' },
-        ];
-        alert(`Data imported successfully for table: ${selectedTable.value}`);
-    }, 1000);
+
+    // FormData to handle file uploads
+    const formData = new FormData();
+    formData.append('file', selectedFile.value as Blob); // Append file
+    formData.append('table', selectedImportTable.value);
+
+    axios
+        .post(route('spreadsheet.import'), formData)
+        .then((response) => {
+            importedData.value = response.data;
+            fileName.value = null; // Reset the file name
+            selectedFile.value = null; // Reset the file
+            showNotification('success', 'Data imported successfully');
+        })
+        .catch(() => {
+            showNotification('error', 'Failed to import data');
+        });
 };
 
-// Dummy function to simulate exporting data
 const exportSpreadsheet = () => {
-    if (!selectedTable.value) {
-        alert('Please select a table to export');
+    if (!selectedExportTable.value) {
+        showNotification('error', 'Please select a table to export');
         return;
     }
-    // Simulating an API call or file generation
-    setTimeout(() => {
-        alert(`Data exported successfully for table: ${selectedTable.value}`);
-    }, 1000);
+
+    // Export request with table name
+    axios
+        .get(
+            route('spreadsheet.export', { table: selectedExportTable.value }),
+            {
+                responseType: 'blob',
+            },
+        )
+        .then((response) => {
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `${selectedExportTable.value}.xlsx`);
+            document.body.appendChild(link);
+            link.click();
+            showNotification('success', 'Data exported successfully');
+        })
+        .catch(() => {
+            showNotification('error', 'Failed to export data');
+        });
 };
+
+const getDBTableNames = async () => {
+    try {
+        const response = await axios.get(route('backup_restore.tables'));
+        availableTables.value = response.data.tables;
+    } catch (error) {
+        console.error('Error fetching table names:', error);
+        showNotification('error', 'Failed to fetch table names');
+    }
+};
+
+onMounted(() => {
+    getDBTableNames();
+});
 </script>
 
 <template>
@@ -73,13 +131,34 @@ const exportSpreadsheet = () => {
                 Handle Spreadsheets
             </h2>
 
+            <div
+                v-if="notification.visible"
+                :class="[
+                    'relative mb-4 rounded-md p-4 shadow-md',
+                    notification.type === 'success'
+                        ? 'bg-green-600'
+                        : 'bg-red-600',
+                ]"
+            >
+                <button
+                    @click="dismissNotification"
+                    class="absolute right-2 top-2 text-white hover:text-gray-200"
+                >
+                    &#x2715;
+                </button>
+                <p class="font-semibold text-white">
+                    {{ notification.type === 'success' ? 'Success' : 'Error' }}
+                </p>
+                <p class="mt-1 text-white">{{ notification.message }}</p>
+            </div>
+
             <!-- Import Section -->
             <div class="mb-8 rounded-lg bg-gray-800 p-4">
                 <h3 class="mb-4 text-xl font-semibold text-white">
                     Import Spreadsheet
                 </h3>
                 <select
-                    v-model="selectedTable"
+                    v-model="selectedImportTable"
                     class="mb-4 w-1/4 rounded bg-gray-600 p-2 text-white"
                 >
                     <option value="">Select a table</option>
@@ -118,7 +197,7 @@ const exportSpreadsheet = () => {
                     Export Spreadsheet
                 </h3>
                 <select
-                    v-model="selectedTable"
+                    v-model="selectedExportTable"
                     class="mb-4 w-1/4 rounded bg-gray-600 p-2 text-white"
                 >
                     <option value="">Select a table</option>

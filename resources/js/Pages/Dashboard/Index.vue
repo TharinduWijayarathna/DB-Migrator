@@ -45,7 +45,7 @@ const fetchStats = async (): Promise<void> => {
 };
 
 onMounted(() => {
-    fetchStats();
+    // fetchStats();
 });
 </script>
 
